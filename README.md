@@ -1,7 +1,7 @@
 [Wiki](https://github.com/BlackteaGit/WaywardTerranFrontierModLoader/wiki/Introduction) | [Current Release](https://github.com/BlackteaGit/WaywardTerranFrontierModLoader/releases)
 # WaywardTerranFrontierModLoader
 
-A tool to enable loading multiple mods into the game Wayward Terran Frontier: Zero Falls. It is forked from Phoenix Point Mod Loader
+A tool to enable loading multiple mods into the game Wayward Terran Frontier: Zero Falls. This project is forked from Phoenix Point Mod Loader
 (https://github.com/Ijwu/PhoenixPointModLoader).
 
 # How it works
@@ -21,4 +21,4 @@ This project uses game librarys "WTF.exe" and "MonoGame.Framework.dll" which you
 
 # Contact
 
- Feel free to contact me on Wayward Terran Frontier discord (https://discord.gg/MpjRsAp) under the name "blacktea".
+ Feel free to contact me on Wayward Terran Frontier discord (https://discord.gg/MpjRsAp) using "@blacktea".
