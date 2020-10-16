@@ -15,7 +15,7 @@ Place the contents of the .zip file in your game root directory. Run the executa
 Run the game to have it generate the `Mods` folder for the Mod Loader. Place all mod directories/files into this folder.
 You will have to reinstall the loader by running `WTFModLoaderInjector.exe` with every new game patch.
 
-Please do not contact the devs of WTF about any bugs happening with installed mod loader, make sure that you can reproduce them in vanilla game first.
+Please do not report any bugs to WTF devs if they happen with installed mod loader, make sure that you can reproduce them in vanilla game first.
 
 # Contribute
 
