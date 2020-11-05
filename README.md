@@ -22,6 +22,12 @@ Please do not report any bugs to WTF devs if they happen with installed mod load
 You are welcome to contribute to this project in any way, please use the "development" branch for development.
 This project uses game librarys "WTF.exe" and "MonoGame.Framework.dll" which you will have to reference if building this project from quellcode.
 
+# Development To-Do List
+
+- [ ] More robust mod loading settings. (e.g. disable certain mods)
+- [ ] More robust mod metadata. (e.g. game version compatibility, mod conflicts, etc.)
+- [ ] Provide ingame GUI for settings.
+
 # Contact
 
  Feel free to contact me on Wayward Terran Frontier discord (https://discord.gg/MpjRsAp) using "@blacktea".
