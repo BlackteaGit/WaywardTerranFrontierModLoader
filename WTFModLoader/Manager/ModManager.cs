@@ -34,7 +34,9 @@ namespace WTFModLoader.Manager
 			List<ModEntry> modsWithMetadata = LoadMetadataForModTypes(mods);
 			List<ModEntry> modsWithResolvedDependencies = ResolveDependencies(modsWithMetadata);
 			List<ModEntry> modsWithResolvedConflicts = ResolveConflicts(modsWithMetadata);
-			Mods = InstantiateMods(modsWithResolvedDependencies.Intersect(modsWithResolvedConflicts).ToList());
+			List<ModEntry> modsWithResolvedGameversion = ResolveGameversion(modsWithMetadata);
+			List<ModEntry> modsWithResolvedLoaderversion = ResolveLoaderversion(modsWithMetadata);
+			Mods = InstantiateMods(modsWithResolvedDependencies.Intersect(modsWithResolvedConflicts).ToList().Intersect(modsWithResolvedGameversion).ToList().Intersect(modsWithResolvedLoaderversion).ToList());
 			AddDefaultModEntries(Mods);
 			InitializeMods(Mods);
 		}
@@ -121,7 +123,56 @@ namespace WTFModLoader.Manager
 			}
 			return successfullyResolved;
 		}
-
+		private List<ModEntry> ResolveGameversion(List<ModEntry> modsWithMetadata)
+		{
+			List<ModEntry> successfullyResolved = new List<ModEntry>();
+			var conflictResolutionList = modsWithMetadata;
+			foreach (ModEntry entry in conflictResolutionList)
+			{
+				if (entry.ModMetadata.Gameversion is null || entry.ModMetadata.Gameversion.Length == 0)
+				{
+					successfullyResolved.Add(entry);
+					continue;
+				}
+				List<ModMetadata> currentlyResolvedMods = successfullyResolved.Select(x => x.ModMetadata).ToList();
+				currentlyResolvedMods.Add(entry.ModMetadata);
+				bool resolved = entry.ModMetadata.TryResolveGameversion();
+				if (resolved)
+				{
+					successfullyResolved.Add(entry);
+				}
+				else
+				{
+					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed game version compatibility check. (mod is not compatible with current game version)");
+				}
+			}
+			return successfullyResolved;
+		}
+		private List<ModEntry> ResolveLoaderversion(List<ModEntry> modsWithMetadata)
+		{
+			List<ModEntry> successfullyResolved = new List<ModEntry>();
+			var conflictResolutionList = modsWithMetadata;
+			foreach (ModEntry entry in conflictResolutionList)
+			{
+				if (entry.ModMetadata.Loaderversion is null || entry.ModMetadata.Loaderversion.Length == 0)
+				{
+					successfullyResolved.Add(entry);
+					continue;
+				}
+				List<ModMetadata> currentlyResolvedMods = successfullyResolved.Select(x => x.ModMetadata).ToList();
+				currentlyResolvedMods.Add(entry.ModMetadata);
+				bool resolved = entry.ModMetadata.TryResolveLoaderversion();
+				if (resolved)
+				{
+					successfullyResolved.Add(entry);
+				}
+				else
+				{
+					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed loader version compatibility check. (mod is not compatible with current version of WTFML)");
+				}
+			}
+			return successfullyResolved;
+		}
 		private List<ModEntry> InstantiateMods(List<ModEntry> modEntries)
 		{
 			var instantiatedEntries = new List<ModEntry>();
