@@ -11,10 +11,12 @@ namespace WTFModLoader
 	{
 		private static ModManager _modManager;
 
+		public static string CurrentBuildVersion { get; private set; }
 		public static string ModsDirectory { get; private set; }
 		public static string SteamModsDirectory { get; private set; }
 		public static void Initialize()
 		{
+			CurrentBuildVersion = "0.2";
 			EnsureFolderSetup();
 			Logger.InitializeLogging(Path.Combine(ModsDirectory, "WTFModLoader.log"));		
 			SimpleInjector.Container container = CompositionRoot.GetContainer();

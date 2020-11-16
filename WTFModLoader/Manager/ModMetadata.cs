@@ -8,18 +8,20 @@ namespace WTFModLoader.Manager
 {
 	public class ModMetadata
 	{
-		public ModMetadata(string name) : this(name, "0.0", string.Empty) { }
+		public ModMetadata(string name) : this(name, "0.0", string.Empty, string.Empty, string.Empty) { }
 
-		public ModMetadata(string name, string version) : this(name, version, string.Empty) { }
+		public ModMetadata(string name, string version) : this(name, version, string.Empty, string.Empty, string.Empty) { }
 
 		[JsonConstructor]
-		public ModMetadata(string name, string version, string description)
+		public ModMetadata(string name, string version, string description, string gameversion, string loaderversion)
 		{
 			Name = name;
 			Version = version;
 			Description = description;
 			Dependencies = new List<ModMetadata>();
 			Conflicts = new List<ModMetadata>();
+			Gameversion = gameversion;
+			Loaderversion = loaderversion;
 		}
 
 		public string Name { get; private set; }
@@ -27,6 +29,8 @@ namespace WTFModLoader.Manager
 		public string Version { get; private set; }
 		public IList<ModMetadata> Dependencies { get; private set; }
 		public IList<ModMetadata> Conflicts { get; private set; }
+		public string Gameversion { get; private set; }
+		public string Loaderversion { get; private set; }
 
 		public bool TryResolveDependencies(IList<ModMetadata> modList)
 		{
@@ -124,6 +128,52 @@ namespace WTFModLoader.Manager
 			}
 
 			return ResolveConflictsForMod(this);
+		}
+
+		public bool TryResolveGameversion()
+		{
+			bool ResolveGameversionForMod(ModMetadata mod)
+			{
+				bool result = false;
+
+
+				if (mod.Gameversion.Length == 0)
+				{
+					return true;
+				}
+
+				if (mod.Gameversion == CoOpSpRpG.CONFIG.version)
+					result = true;
+
+
+				return result;
+			}
+
+			return ResolveGameversionForMod(this);
+		}
+
+		public bool TryResolveLoaderversion()
+		{
+			bool ResolveGameversionForMod(ModMetadata mod)
+			{
+				bool result = false;
+
+				if (mod.Gameversion.Length == 0)
+				{
+					return true;
+				}
+
+				float versioncheck = Convert.ToSingle(mod.Loaderversion, System.Globalization.CultureInfo.InvariantCulture);
+				float comparevalue = Convert.ToSingle(WTFModLoader.CurrentBuildVersion, System.Globalization.CultureInfo.InvariantCulture);
+
+				if (versioncheck >= comparevalue)
+					result = true;
+
+
+					return result;
+			}
+
+			return ResolveGameversionForMod(this);
 		}
 
 	}
