@@ -29,7 +29,7 @@ namespace WTFModloaderInjector
         private const string BACKUP_FILE_EXT = ".orig";
 
         private const string HOOK_TYPE = "CoOpSpRpG.Game1";
-        private const string HOOK_METHOD = "Initialize";
+        private const string HOOK_METHOD = ".ctor";// Injecting Constructor
         private const string INJECT_TYPE = "WTFModLoader.WTFModLoader";
         private const string INJECT_METHOD = "Initialize";
 
@@ -300,7 +300,23 @@ namespace WTFModloaderInjector
             // get the methods that we're hooking and injecting
             var injectedMethod = injecting.GetType(INJECT_TYPE).Methods.Single(x => x.Name == INJECT_METHOD);
             var hookedMethod = game.GetType(HOOK_TYPE).Methods.First(x => x.Name == HOOK_METHOD);
+            /*
+            var staticConstructorAttributes =
+            Mono.Cecil.MethodAttributes.Private |
+            Mono.Cecil.MethodAttributes.HideBySig |
+            Mono.Cecil.MethodAttributes.SpecialName |
+            Mono.Cecil.MethodAttributes.RTSpecialName |
+            Mono.Cecil.MethodAttributes.Static;
             
+           var staticConstructorAttributes =
+           Mono.Cecil.MethodAttributes.Public |
+           Mono.Cecil.MethodAttributes.HideBySig |
+           Mono.Cecil.MethodAttributes.SpecialName |
+           Mono.Cecil.MethodAttributes.RTSpecialName;
+           MethodDefinition hookedMethod = new MethodDefinition(".ctor", staticConstructorAttributes, game.GetType(HOOK_TYPE));
+           */
+
+
             // If the return type is an iterator -- need to go searching for its MoveNext method which contains the actual code you'll want to inject
             if (hookedMethod.ReturnType.Name.Contains("IEnumerator"))
             {
@@ -312,16 +328,15 @@ namespace WTFModloaderInjector
             for (var i = 0; i < hookedMethod.Body.Instructions.Count; i++)
             {
                 var instruction = hookedMethod.Body.Instructions[i];
-                
-                if (instruction.OpCode.Code.Equals(Code.Call) && instruction.OpCode.OperandType.Equals(OperandType.InlineMethod))
+                if (instruction.OpCode.Code.Equals(Code.Call))
                 {
                     var methodReference = (MethodReference)instruction.Operand;
-                    if (methodReference.Name.Contains("FromHandle"))
-                        targetInstruction = i + 1; // hack - we want to run after that instruction has been fully processed, not in the middle of it.
+                    if (methodReference.Name.Contains("Initialize"))
+                        targetInstruction = i + 1;                   
                 }
 
             }
-            
+
             if (targetInstruction == -1)
             {
                 WriteLine("Injector failed to locate hooking point. Are you injecting an unsupported version of the game?");
