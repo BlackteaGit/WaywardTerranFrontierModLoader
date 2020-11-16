@@ -33,7 +33,8 @@ namespace WTFModLoader.Manager
 			List<Type> mods = _modLoader.LoadModTypesFromDirectory(ModsDirectory, SteamModsDirectory);
 			List<ModEntry> modsWithMetadata = LoadMetadataForModTypes(mods);
 			List<ModEntry> modsWithResolvedDependencies = ResolveDependencies(modsWithMetadata);
-			Mods = InstantiateMods(modsWithResolvedDependencies);
+			List<ModEntry> modsWithResolvedConflicts = ResolveConflicts(modsWithMetadata);
+			Mods = InstantiateMods(modsWithResolvedDependencies.Intersect(modsWithResolvedConflicts).ToList());
 			AddDefaultModEntries(Mods);
 			InitializeMods(Mods);
 		}
@@ -90,6 +91,32 @@ namespace WTFModLoader.Manager
 				else
 				{
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed to resolve dependencies. (required mod(s) definition not found in metadata files)");
+				}
+			}
+			return successfullyResolved;
+		}
+
+		private List<ModEntry> ResolveConflicts(List<ModEntry> modsWithMetadata)
+		{
+			List<ModEntry> successfullyResolved = new List<ModEntry>();
+			var conflictResolutionList = modsWithMetadata.OrderBy(entry => entry.ModMetadata?.Conflicts?.Count);
+			foreach (ModEntry entry in conflictResolutionList)
+			{
+				if (entry.ModMetadata.Conflicts is null || entry.ModMetadata.Conflicts.Count == 0)
+				{
+					successfullyResolved.Add(entry);
+					continue;
+				}
+				List<ModMetadata> currentlyResolvedMods = successfullyResolved.Select(x => x.ModMetadata).ToList();
+				currentlyResolvedMods.Add(entry.ModMetadata);
+				bool resolved = entry.ModMetadata.TryResolveConflicts(currentlyResolvedMods);
+				if (resolved)
+				{
+					successfullyResolved.Add(entry);
+				}
+				else
+				{
+					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed to resolve conflicts. (conflicting mod(s) definition was found in metadata files)");
 				}
 			}
 			return successfullyResolved;
