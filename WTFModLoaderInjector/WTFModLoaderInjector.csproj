@@ -49,6 +49,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WTF">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Wayward Terran Frontier\WTF.exe</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="WTFModLoaderInjector.cs" />

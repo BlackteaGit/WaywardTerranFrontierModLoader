@@ -9,6 +9,7 @@ using Mono.Cecil.Cil;
 using static System.Console;
 using Mono.Cecil.Rocks;
 
+
 namespace WTFModloaderInjector
 {
 	internal static class WTFModLoaderInjector
@@ -29,12 +30,12 @@ namespace WTFModloaderInjector
         private const string BACKUP_FILE_EXT = ".orig";
 
         private const string HOOK_TYPE = "CoOpSpRpG.Game1";
-        private const string HOOK_METHOD = ".ctor";// Injecting Constructor
+        private const string HOOK_METHOD = ".ctor";
         private const string INJECT_TYPE = "WTFModLoader.WTFModLoader";
         private const string INJECT_METHOD = "Initialize";
 
-        private const string GAME_VERSION_TYPE = "VersionInfo";
-        private const string GAME_VERSION_CONST = "CURRENT_VERSION_NUMBER";
+        private const string GAME_VERSION_TYPE = "CoOpSpRpG.CONFIG";
+        private const string GAME_VERSION_CONST = "version";
         
 
         // ReSharper disable once InconsistentNaming
@@ -90,7 +91,7 @@ namespace WTFModloaderInjector
             },
             {
                 "u|update",
-                "Update mod loader injection of WTF game assembly to current PPML version",
+                "Update mod loader injection of WTF game assembly to current WTFML version",
                 v => OptionsIn.Updating = v != null
             },
             {
@@ -300,22 +301,6 @@ namespace WTFModloaderInjector
             // get the methods that we're hooking and injecting
             var injectedMethod = injecting.GetType(INJECT_TYPE).Methods.Single(x => x.Name == INJECT_METHOD);
             var hookedMethod = game.GetType(HOOK_TYPE).Methods.First(x => x.Name == HOOK_METHOD);
-            /*
-            var staticConstructorAttributes =
-            Mono.Cecil.MethodAttributes.Private |
-            Mono.Cecil.MethodAttributes.HideBySig |
-            Mono.Cecil.MethodAttributes.SpecialName |
-            Mono.Cecil.MethodAttributes.RTSpecialName |
-            Mono.Cecil.MethodAttributes.Static;
-            
-           var staticConstructorAttributes =
-           Mono.Cecil.MethodAttributes.Public |
-           Mono.Cecil.MethodAttributes.HideBySig |
-           Mono.Cecil.MethodAttributes.SpecialName |
-           Mono.Cecil.MethodAttributes.RTSpecialName;
-           MethodDefinition hookedMethod = new MethodDefinition(".ctor", staticConstructorAttributes, game.GetType(HOOK_TYPE));
-           */
-
 
             // If the return type is an iterator -- need to go searching for its MoveNext method which contains the actual code you'll want to inject
             if (hookedMethod.ReturnType.Name.Contains("IEnumerator"))
@@ -332,7 +317,7 @@ namespace WTFModloaderInjector
                 {
                     var methodReference = (MethodReference)instruction.Operand;
                     if (methodReference.Name.Contains("Initialize"))
-                        targetInstruction = i + 1;                   
+                        targetInstruction = i + 1; // hack - we want to run after that instruction has been fully processed, not in the middle of it.                  
                 }
 
             }
@@ -378,13 +363,20 @@ namespace WTFModloaderInjector
                             if (IsHookInstalled(methodDefinition, out isCurrentInjection))
                                 detectedInject = true;
                         }
-
                     if (type.FullName == GAME_VERSION_TYPE)
                     {
-                        var fieldInfo = type.Fields.First(x => x.IsLiteral && !x.IsInitOnly && x.Name == GAME_VERSION_CONST);
 
-                        if (null != fieldInfo)
-                            gameVersion = fieldInfo.Constant.ToString();
+                        var field = type.Fields.SingleOrDefault(c => c.Name == GAME_VERSION_CONST);
+                        var cctor = type.Methods.SingleOrDefault(m => m.Name == ".cctor");
+                        if (cctor == null)
+                            throw new Exception("no field initialization...");
+
+                        var store = cctor.Body.Instructions.SingleOrDefault(i => i.OpCode == OpCodes.Stsfld && i.Operand == field);
+                        if (store.Previous.Operand.GetType() != typeof(string))
+                            gameVersion = store.Previous.Operand.ToString();
+
+                        gameVersion = (string)store.Previous.Operand;
+
                     }
 
                     if (detectedInject && !string.IsNullOrEmpty(gameVersion))
@@ -559,7 +551,7 @@ namespace WTFModloaderInjector
 
         private static string FormulateMessage(string backupFileName)
         {
-            return $"The backup file \"{backupFileName}\" was PPML-injected.";
+            return $"The backup file \"{backupFileName}\" was WTFML-injected.";
         }
     }
 
