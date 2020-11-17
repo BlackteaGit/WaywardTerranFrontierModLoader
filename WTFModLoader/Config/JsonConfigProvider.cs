@@ -19,11 +19,19 @@ namespace WTFModLoader.Config
 			{
 				throw new FileNotFoundException($"The config file was not found at path `{absolutePath}`");
 			}
-
+			try
+			{ 
 			string configText = File.ReadAllText(absolutePath);
 			T configObject = JsonConvert.DeserializeObject<T>(configText);
-
 			return configObject;
+			}
+			catch (Exception e)
+			{
+				Logger.Log($"{e}");
+				Logger.Log($"File {absolutePath} has unknown format.");
+				T configObject = JsonConvert.DeserializeObject<T>("");
+				return configObject;
+			}	
 		}
 
 		public bool Write<T>(string relativeFilePath, T config)
