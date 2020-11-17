@@ -130,12 +130,11 @@ namespace WTFModLoader.Manager
 			return ResolveConflictsForMod(this);
 		}
 
-		public bool TryResolveGameversion()
+		public bool TryResolveGameVersion()
 		{
-			bool ResolveGameversionForMod(ModMetadata mod)
+			bool ResolveGameVersionForMod(ModMetadata mod)
 			{
 				bool result = false;
-
 
 				if (mod.Gameversion.Length == 0)
 				{
@@ -143,29 +142,104 @@ namespace WTFModLoader.Manager
 				}
 
 				if (mod.Gameversion == CoOpSpRpG.CONFIG.version)
-					result = true;
+                {
+					return true;
+				}
 
+				try
+				{
+					string currentgameversion = CoOpSpRpG.CONFIG.version;
+					string modrequiredgameversion = mod.Gameversion;
+					float formatedCurrentGameversion = 0;
+					float formatedModRequiredGameversion = 0;
+			
+					if (currentgameversion.Length >= 5)
+					{ 
+
+						var toformat = currentgameversion.Substring(0, 5);
+						int foundS1 = toformat.IndexOf(".");
+						int foundS2 = toformat.IndexOf(".", foundS1 + 1);
+
+						if (foundS1 != foundS2 && foundS1 >= 0 && foundS2 >= 0)
+						{
+							toformat = toformat.Remove(foundS2, 1);
+						}
+						else
+                        {
+							toformat = toformat.Substring(0, 3);
+						}
+
+						formatedCurrentGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
+
+						if (modrequiredgameversion.Length == 3)
+						{
+							toformat = currentgameversion.Substring(0, 3);
+							formatedCurrentGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
+						}
+					}
+
+					if (modrequiredgameversion.Length == 3)
+					{
+						var toformat = modrequiredgameversion.Substring(0, 3);
+						formatedModRequiredGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
+					}
+					else
+					{
+						if (modrequiredgameversion.Length == 5)
+						{
+
+							var toformat = modrequiredgameversion.Substring(0, 5);
+							int foundS1 = toformat.IndexOf(".");
+							int foundS2 = toformat.IndexOf(".", foundS1 + 1);
+
+							if (foundS1 != foundS2 && foundS1 >= 0)
+								toformat = toformat.Remove(foundS2, 1);
+
+							formatedModRequiredGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
+						}
+					}
+
+					if (formatedModRequiredGameversion != 0 && formatedCurrentGameversion != 0)
+					{ 
+						if (formatedCurrentGameversion >= formatedModRequiredGameversion)
+							result = true;
+					}
+					else
+                    {
+						if (modrequiredgameversion.Length <= 5)
+						{ 
+							Logger.Log($"Mod `{mod.Name} (v{mod.Version})` has game version metadata in unknown format: `{mod.Gameversion}` and will not be loaded");
+						}
+
+						result = false;
+					}
+
+				}
+				catch (Exception e)
+				{
+					Logger.Log($"{e}");
+					result = false;
+				}
 
 				return result;
 			}
 
-			return ResolveGameversionForMod(this);
+			return ResolveGameVersionForMod(this);
 		}
 
-		public bool TryResolveLoaderversion()
+		public bool TryResolveLoaderVersion()
 		{
-			bool ResolveGameversionForMod(ModMetadata mod)
+			bool ResolveLoaderVersionForMod(ModMetadata mod)
 			{
 				bool result = false;
 
-				if (mod.Gameversion.Length == 0)
+				if (mod.Loaderversion.Length == 0)
 				{
 					return true;
 				}
 
 				float versioncheck = Convert.ToSingle(mod.Loaderversion, System.Globalization.CultureInfo.InvariantCulture);
 				float comparevalue = Convert.ToSingle(WTFModLoader.CurrentBuildVersion, System.Globalization.CultureInfo.InvariantCulture);
-
 				if (versioncheck >= comparevalue)
 					result = true;
 
@@ -173,7 +247,7 @@ namespace WTFModLoader.Manager
 					return result;
 			}
 
-			return ResolveGameversionForMod(this);
+			return ResolveLoaderVersionForMod(this);
 		}
 
 	}
