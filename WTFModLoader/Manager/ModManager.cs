@@ -136,7 +136,7 @@ namespace WTFModLoader.Manager
 				}
 				List<ModMetadata> currentlyResolvedMods = successfullyResolved.Select(x => x.ModMetadata).ToList();
 				currentlyResolvedMods.Add(entry.ModMetadata);
-				bool resolved = entry.ModMetadata.TryResolveGameversion();
+				bool resolved = entry.ModMetadata.TryResolveGameVersion();
 				if (resolved)
 				{
 					successfullyResolved.Add(entry);
@@ -161,7 +161,7 @@ namespace WTFModLoader.Manager
 				}
 				List<ModMetadata> currentlyResolvedMods = successfullyResolved.Select(x => x.ModMetadata).ToList();
 				currentlyResolvedMods.Add(entry.ModMetadata);
-				bool resolved = entry.ModMetadata.TryResolveLoaderversion();
+				bool resolved = entry.ModMetadata.TryResolveLoaderVersion();
 				if (resolved)
 				{
 					successfullyResolved.Add(entry);
