@@ -24,8 +24,8 @@ This project uses game librarys "WTF.exe" and "MonoGame.Framework.dll" which you
 
 # Development To-Do List
 
+- [x] More robust mod metadata. (e.g. game version compatibility, mod conflicts, etc.)
 - [ ] More robust mod loading settings. (e.g. disable certain mods)
-- [ ] More robust mod metadata. (e.g. game version compatibility, mod conflicts, etc.)
 - [ ] Provide ingame GUI for settings.
 
 # Contact
