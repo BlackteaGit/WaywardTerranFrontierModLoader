@@ -29,7 +29,7 @@ namespace WTFModLoader.Manager
 			{
 				try
 				{
-					Assembly loadedFile = Assembly.LoadFrom(foundFile);
+					Assembly loadedFile = Assembly.UnsafeLoadFrom(foundFile);
 					modTypes = modTypes.Concat(FilterTypes(loadedFile, predicate)).ToList();
 				}
 				catch (Exception e)
