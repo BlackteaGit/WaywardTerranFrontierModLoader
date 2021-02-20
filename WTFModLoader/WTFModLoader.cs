@@ -16,7 +16,7 @@ namespace WTFModLoader
 		public static string SteamModsDirectory { get; private set; }
 		public static void Initialize()
 		{
-			CurrentBuildVersion = "0.2";
+			CurrentBuildVersion = "0.3";
 			EnsureFolderSetup();
 			Logger.InitializeLogging(Path.Combine(ModsDirectory, "WTFModLoader.log"));		
 			SimpleInjector.Container container = CompositionRoot.GetContainer();
