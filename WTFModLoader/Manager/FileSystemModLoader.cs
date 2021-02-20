@@ -34,7 +34,7 @@ namespace WTFModLoader.Manager
 				}
 				catch (Exception e)
 				{
-					Logger.Log($"Could not load mod file `{foundFile}`.");
+					Logger.Log($"Failed to load mod file `{foundFile}`.");
 					Logger.Log(e.ToString());
 					continue;
 				}
