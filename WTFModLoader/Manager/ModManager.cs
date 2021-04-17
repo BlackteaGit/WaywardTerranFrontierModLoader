@@ -38,9 +38,14 @@ namespace WTFModLoader.Manager
 			List<ModEntry> modsWithResolvedLoaderversion = ResolveLoaderversion(modsWithMetadata);
 			Mods = InstantiateMods(modsWithResolvedDependencies.Intersect(modsWithResolvedConflicts).ToList().Intersect(modsWithResolvedGameversion).ToList().Intersect(modsWithResolvedLoaderversion).ToList());
 			AddDefaultModEntries(Mods);
+			UpdateModsConfigList(Mods);
 			InitializeMods(Mods);
 		}
 
+		private void UpdateModsConfigList(List<ModEntry> mods)
+		{
+			
+		}
 		private void AddDefaultModEntries(List<ModEntry> mods)
 		{
 			//mods.Add(new ModEntry(new ModsLoadedInfo(), null, new ModMetadata("Mods Loaded Info", "1.0", null)));  //Loading asseembly included mod for dispalying WTFModloader debug info into the game menu.

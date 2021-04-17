@@ -42,6 +42,7 @@
       <HintPath>..\GamePackages\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,8 +50,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WTF">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Wayward Terran Frontier\WTF.exe</HintPath>
+    <Reference Include="WaywardExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Zero Falls\WaywardExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="WTF, Version=0.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Zero Falls\WTF.exe</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
