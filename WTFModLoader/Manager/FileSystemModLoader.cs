@@ -29,8 +29,11 @@ namespace WTFModLoader.Manager
 			{
 				try
 				{
+					if(!foundFile.Contains("WTFModLoader.dll"))
+					{ 
 					Assembly loadedFile = Assembly.UnsafeLoadFrom(foundFile);
 					modTypes = modTypes.Concat(FilterTypes(loadedFile, predicate)).ToList();
+					}
 				}
 				catch (Exception e)
 				{
