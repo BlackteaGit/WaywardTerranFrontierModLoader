@@ -54,13 +54,14 @@ namespace WTFModLoader
 		public class MyLoader : ExtensionLoader
 		{
 			public void load(Dictionary<Color, BackdropExt> backdrops, Dictionary<string, TextureBatch> sectorTextures, Dictionary<Color, TerrainGenerator> sectorGenerators, Dictionary<Color, LightSettings> lightSettings, Dictionary<Color, LightShaftSettings> lightShaftSettings, Dictionary<Color, string[]> audioSettings, List<Color> preloadRequired, Dictionary<Color, IconBatch> mapIcons, Dictionary<Color, string> iconTechniques, List<string> mapDataIncludes, Dictionary<string, POEIcon> interestIcons, Dictionary<Color, BackdropInfo> backdropInfo)
-			{			
-			
-			string manifestDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+			{
+				string rootDirectory = System.IO.Directory.GetCurrentDirectory()
 					?? throw new InvalidOperationException("Could not determine operating directory. Is your folder structure correct? " +
 					"Try verifying game files in Steam, if you're using it.");
-				SteamModsDirectory = Path.GetFullPath(Path.Combine(manifestDirectory, Path.Combine(@"..\..\..\workshop\content\392080")));
-				ModsDirectory = Path.GetFullPath(Path.Combine(manifestDirectory, Path.Combine(@"..\Mods")));
+				var workshop = Path.GetFullPath(Path.Combine(rootDirectory, Path.Combine(@"..\..\workshop\content\392080")));
+				var mods = Path.GetFullPath(Path.Combine(rootDirectory, Path.Combine(@"Mods")));
+				SteamModsDirectory = workshop;
+				ModsDirectory = mods;
 				Initialize();
 			}
 		}

@@ -48,7 +48,7 @@ namespace WTFModLoader.Manager
 		}
 		private void AddDefaultModEntries(List<ModEntry> mods)
 		{
-			//mods.Add(new ModEntry(new ModsLoadedInfo(), null, new ModMetadata("Mods Loaded Info", "1.0", null)));  //Loading asseembly included mod for dispalying WTFModloader debug info into the game menu.
+			//mods.Add(new ModEntry(new ModsLoadedInfo(), null, new ModMetadata("Mods Loaded Info", "1.0")));  //Loading asseembly included mod for dispalying WTFModloader debug info into the game menu.
 		}
 
 		private List<ModEntry> LoadMetadataForModTypes(List<Type> mods)
