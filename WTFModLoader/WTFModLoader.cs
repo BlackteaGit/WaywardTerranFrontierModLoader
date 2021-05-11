@@ -17,8 +17,7 @@ namespace WTFModLoader
 {
 	public static class WTFModLoader
 	{
-		private static ModManager _modManager;
-
+		public static ModManager _modManager;
 		public static string CurrentBuildVersion { get; private set; }
 		public static string ModsDirectory { get; private set; }
 		public static string SteamModsDirectory { get; private set; }
@@ -107,15 +106,14 @@ namespace WTFModLoader
 				Dictionary<Color, string[]> dictionary5 = new Dictionary<Color, string[]>();
 				Dictionary<Color, IconBatch> dictionary6 = new Dictionary<Color, IconBatch>();
 				Dictionary<Color, string> dictionary7 = new Dictionary<Color, string>();
-				string path = Directory.GetCurrentDirectory() + "\\Extensions\\";
-				if (Directory.Exists(path))
+				if (Directory.Exists(Directory.GetCurrentDirectory() + "\\Extensions\\"))
 				{
-					string[] files = Directory.GetFiles(path, "*.dll");
-					List<Assembly> list = new List<Assembly>(files.Length);
-					foreach (string text in files)
+					string[] libraries = DATA_FOLDER.getLibraries();
+					List<Assembly> list = new List<Assembly>(libraries.Length);
+					foreach (string text in libraries)
 					{
-						if(!text.Contains("WTFModLoader.dll") && !text.Contains("0Harmony.dll") && !text.Contains("Newtonsoft.Json.dll"))
-						{ 
+						if (!text.Contains("WTFModLoader.dll") && !text.Contains("0Harmony.dll") && !text.Contains("Newtonsoft.Json.dll"))
+						{
 							try
 							{
 								Assembly item = Assembly.UnsafeLoadFrom(text);
@@ -126,7 +124,6 @@ namespace WTFModLoader
 								SCREEN_MANAGER.debug1 = "failed to load an extension:" + text;
 							}
 						}
-
 					}
 					Type typeFromHandle = typeof(ExtensionLoader);
 					List<Type> list2 = new List<Type>();

@@ -28,8 +28,8 @@ namespace WTFModLoader.Manager
 			foreach (string foundFile in fileSearch)
 			{
 				try
-				{
-					if(!foundFile.Contains("WTFModLoader.dll"))
+				{		
+					if (!foundFile.Contains("WTFModLoader.dll") && !foundFile.Contains("0Harmony.dll"))
 					{ 
 					Assembly loadedFile = Assembly.UnsafeLoadFrom(foundFile);
 					modTypes = modTypes.Concat(FilterTypes(loadedFile, predicate)).ToList();
