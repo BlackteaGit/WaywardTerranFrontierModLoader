@@ -16,8 +16,9 @@ namespace WTFModLoader.Infrastructure
 			if (Container is null)
 			{
 				Container = new Container();
-				Container.Register<IFileConfigProvider, JsonConfigProvider>();
-				Container.Verify();
+				//Container.Options.ResolveUnregisteredConcreteTypes = true;
+				//Container.Register<IFileConfigProvider, JsonConfigProvider>();
+				//Container.Verify();
 				return Container;
 			}
 			else

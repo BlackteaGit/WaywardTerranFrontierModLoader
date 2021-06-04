@@ -22,15 +22,14 @@ namespace WTFModLoader
 		public static string SteamModsDirectory { get; private set; }
 		public static void Initialize()
 		{
-			CurrentBuildVersion = "0.3";
+			CurrentBuildVersion = "0.4";
 			if(ModsDirectory == null || SteamModsDirectory == null)
 			{
 				LegacyLoad();
 			}
 			else
 			{
-				string manifestDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-				
+				string manifestDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);		
 				String manifestDirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(manifestDirectory, System.IO.Path.Combine(@"0Harmony.dll")));
 				String rootdirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"0Harmony.dll")));
 
@@ -40,12 +39,34 @@ namespace WTFModLoader
 					File.Copy(rootdirectoryFile, rootdirectoryBackupFile, true);
 					File.Delete(rootdirectoryFile);
 				}
+				manifestDirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(manifestDirectory, System.IO.Path.Combine(@"Newtonsoft.Json.dll")));
+				rootdirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"Newtonsoft.Json.dll")));
 
+				if (System.IO.File.Exists(manifestDirectoryFile) && System.IO.File.Exists(rootdirectoryFile))
+				{
+					String rootdirectoryBackupFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"Newtonsoft.Json.dll.old")));
+					File.Copy(rootdirectoryFile, rootdirectoryBackupFile, true);
+					File.Delete(rootdirectoryFile);
+				}
+				manifestDirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(manifestDirectory, System.IO.Path.Combine(@"SimpleInjector.dll")));
+				rootdirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"SimpleInjector.dll")));
+
+				if (System.IO.File.Exists(manifestDirectoryFile) && System.IO.File.Exists(rootdirectoryFile))
+				{
+					String rootdirectoryBackupFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"SimpleInjector.dll.old")));
+					File.Copy(rootdirectoryFile, rootdirectoryBackupFile, true);
+					File.Delete(rootdirectoryFile);
+				}
+				
 			}
 			EnsureFolderSetup();
-			HarmonyPatcher.PatchRootMenuRev2();
+			ModDbManager.Init();
+			ModDbManager.updateCfgDb();
+			ModDbManager.loadCfgData();
+			HarmonyPatcher.PatchGameRootMenu();
 			Logger.InitializeLogging(Path.Combine(ModsDirectory, "WTFModLoader.log"));		
 			SimpleInjector.Container container = CompositionRoot.GetContainer();
+			container.Options.ResolveUnregisteredConcreteTypes = true;
 			_modManager = new ModManager(ModsDirectory, SteamModsDirectory, new JsonConfigProvider(), new FileSystemModLoader(), container);
 			_modManager.Initialize();
 		}

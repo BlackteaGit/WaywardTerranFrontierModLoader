@@ -24,6 +24,12 @@ namespace WTFModLoader
             harmony.Patch(mOriginal, new HarmonyMethod(mPrefix));
         }
 
+		public static void PatchGameRootMenu()
+        {
+			PatchRootMenuRev2();
+			PatchWidgetSettings();
+		}
+
 		public static void PatchRootMenuRev2()
 		{
 			var mOriginal = (MethodBase)(typeof(RootMenuRev2).GetMember(".ctor", AccessTools.all)[0]);
@@ -34,11 +40,24 @@ namespace WTFModLoader
 			mPostfix = AccessTools.Method(typeof(HarmonyPatcher), "RootMenuRev2createElementsPostfix");
 			harmony.Patch(mOriginal, null, new HarmonyMethod(mPostfix));
 
+			mOriginal = AccessTools.Method(typeof(RootMenuRev2), "resize", new Type[] { });
+			mPostfix = AccessTools.Method(typeof(HarmonyPatcher), "RootMenuRev2resizePostfix");
+			harmony.Patch(mOriginal, null, new HarmonyMethod(mPostfix));
+
 			mOriginal = AccessTools.Method(typeof(RootMenuRev2), "Update", new Type[] { typeof(float) });
 			var mPrefix = AccessTools.Method(typeof(HarmonyPatcher), "RootMenuRev2UpdatePrefix");
 			harmony.Patch(mOriginal, new HarmonyMethod(mPrefix));
-
 		}
+
+		public static void PatchWidgetSettings()
+		{
+			var internalclass = typeof(RootMenuRev2).Assembly.GetType("CoOpSpRpG.WidgetSettings");
+			var mOriginal = AccessTools.Method(internalclass, "Draw", new Type[] { typeof(SpriteBatch) });
+			var mPostfix = AccessTools.Method(typeof(HarmonyPatcher), "WidgetSettingsDrawPostfix");
+			harmony.Patch(mOriginal, null, new HarmonyMethod(mPostfix));
+		}
+
+		
 
 		private static bool BACKDROPLoadPrefix(GraphicsDevice device, IServiceProvider services, ref ContentManager ___content, ref RenderTarget2D ___backdropTarget, ref RenderTarget2D ___occlusionTarget)
 		{
@@ -270,18 +289,25 @@ namespace WTFModLoader
 			return false;
 		}
 
-		private static void RootMenuRev2ConstructorPostfix(RootMenuRev2 __instance)
+		private static void RootMenuRev2ConstructorPostfix(RootMenuRev2 __instance, ref int ___coreMenuWidth)
 		{
 			WTFRootMenu.instance = __instance;
 			WTFRootMenu.mods = new WidgetMods(new WidgetMods.CloseEvent(WTFRootMenu.closeSettings));
+			___coreMenuWidth += 124;
 		}
 
 		private static void RootMenuRev2createElementsPostfix(GuiElement ___subMenuExtra)
 		{
 			___subMenuExtra.width += 124;
-			___subMenuExtra.AddButton("Mod Loader", SCREEN_MANAGER.white, 4, 0, 120, 40, new BasicButton.ClickEvent(WTFRootMenu.actionMods), SCREEN_MANAGER.FF16, new Color(196, 250, 255, 210));
+			___subMenuExtra.elementList[0].offsetX += 4;
+			___subMenuExtra.AddButton("Mod Manager", SCREEN_MANAGER.white, 0, 0, 120, 40, new BasicButton.ClickEvent(WTFRootMenu.actionMods), SCREEN_MANAGER.FF16, new Color(196, 250, 255, 210));
+			___subMenuExtra.elementList.Move(___subMenuExtra.elementList.Count-1, 0);
 		}
 
+		private static void RootMenuRev2resizePostfix()
+		{
+			WTFRootMenu.mods.Resize();
+		}
 		private static void RootMenuRev2UpdatePrefix(float elapsed, Rectangle ___mousePos, MouseState ___lastMouse)
 		{
 			MouseAction mouseAction = MouseAction.none;
@@ -311,6 +337,10 @@ namespace WTFModLoader
 				mouseAction = MouseAction.shiftLeftClick;
 			}
 			WTFRootMenu.mods.Update(elapsed, ___mousePos, mouseAction);
+		}
+		private static void WidgetSettingsDrawPostfix(SpriteBatch batch)
+		{
+			WTFRootMenu.mods.Draw(batch);
 		}
 	}
 }

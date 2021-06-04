@@ -17,7 +17,9 @@ namespace WTFModLoader.Manager
 
 		public string ModsDirectory { get; }
 		public string SteamModsDirectory { get; }
-		public List<ModEntry> Mods { get; private set; }
+		public List<ModEntry> ActiveMods { get; private set; }
+		public Lazy<List<ModEntry>> IssuedMods { get; private set; }
+		public Lazy<List<ModEntry>> InactiveMods { get; private set; }
 
 		public ModManager(string modsDirectory, string steamModsDirectory, IFileConfigProvider metadataProvider, FileSystemModLoader modLoader, Container container)
 		{
@@ -30,25 +32,41 @@ namespace WTFModLoader.Manager
 
 		public void Initialize()
 		{
+			IssuedMods = new Lazy<List<ModEntry>>();
+			InactiveMods = new Lazy<List<ModEntry>>();
 			List<Type> mods = _modLoader.LoadModTypesFromDirectory(ModsDirectory, SteamModsDirectory);
 			List<ModEntry> modsWithMetadata = LoadMetadataForModTypes(mods);
 			List<ModEntry> modsWithResolvedDependencies = ResolveDependencies(modsWithMetadata);
 			List<ModEntry> modsWithResolvedConflicts = ResolveConflicts(modsWithMetadata);
 			List<ModEntry> modsWithResolvedGameversion = ResolveGameversion(modsWithMetadata);
 			List<ModEntry> modsWithResolvedLoaderversion = ResolveLoaderversion(modsWithMetadata);
-			Mods = InstantiateMods(modsWithResolvedDependencies.Intersect(modsWithResolvedConflicts).ToList().Intersect(modsWithResolvedGameversion).ToList().Intersect(modsWithResolvedLoaderversion).ToList());
-			AddDefaultModEntries(Mods);
-			UpdateModsConfigList(Mods);
-			InitializeMods(Mods);
+			List<ModEntry> enabledMods = ResolveDisabledMods(modsWithResolvedLoaderversion);
+			ActiveMods = InstantiateMods(modsWithResolvedDependencies.Intersect(modsWithResolvedConflicts).ToList().Intersect(modsWithResolvedGameversion).ToList().Intersect(modsWithResolvedLoaderversion).ToList().Intersect(enabledMods).ToList());
+			AddDefaultModEntries(ActiveMods);
+			InitializeMods(ActiveMods);
 		}
 
-		private void UpdateModsConfigList(List<ModEntry> mods)
-		{
-			
-		}
 		private void AddDefaultModEntries(List<ModEntry> mods)
 		{
 			//mods.Add(new ModEntry(new ModsLoadedInfo(), null, new ModMetadata("Mods Loaded Info", "1.0")));  //Loading asseembly included mod for dispalying WTFModloader debug info into the game menu.
+		}
+
+		private List<ModEntry> ResolveDisabledMods(List<ModEntry> modsWithMetadata)
+		{
+			List<ModEntry> successfullyResolved = new List<ModEntry>();
+			var disabledResolutionList = modsWithMetadata;
+			foreach (ModEntry entry in disabledResolutionList)
+			{
+				if (ModDbManager.isInactive(entry))
+				{	
+					InactiveMods.Value.Add(entry);
+				}
+				else
+				{
+					successfullyResolved.Add(entry);
+				}
+			}
+			return successfullyResolved;
 		}
 
 		private List<ModEntry> LoadMetadataForModTypes(List<Type> mods)
@@ -97,6 +115,8 @@ namespace WTFModLoader.Manager
 				}
 				else
 				{
+					entry.Issue = "dependency not found";
+					IssuedMods.Value.Add(entry);
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed to resolve dependencies. (required mod(s) definition not found in metadata files)");
 				}
 			}
@@ -123,6 +143,8 @@ namespace WTFModLoader.Manager
 				}
 				else
 				{
+					entry.Issue = "conflicts with other mod(s)";
+					IssuedMods.Value.Add(entry);
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed to resolve conflicts. (conflicting mod(s) definition was found in metadata files)");
 				}
 			}
@@ -148,6 +170,8 @@ namespace WTFModLoader.Manager
 				}
 				else
 				{
+					entry.Issue = "incompatible with current game version";
+					IssuedMods.Value.Add(entry);
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed game version compatibility check. (mod is not compatible with current game version)");
 				}
 			}
@@ -173,6 +197,8 @@ namespace WTFModLoader.Manager
 				}
 				else
 				{
+					entry.Issue = "incompatible with current loader version";
+					IssuedMods.Value.Add(entry);
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed loader version compatibility check. (mod is not compatible with current version of WTFML)");
 				}
 			}
@@ -197,6 +223,8 @@ namespace WTFModLoader.Manager
 				{
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed to initialize.");
 					Logger.Log($"{e}");
+					entry.Issue = "failed to initialize";
+					IssuedMods.Value.Add(entry);
 					continue;
 				}
 			}
