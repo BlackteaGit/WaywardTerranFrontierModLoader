@@ -27,6 +27,11 @@ This project uses game librarys "WTF.exe" and "MonoGame.Framework.dll" which you
 - [x] More robust mod metadata. (e.g. game version compatibility, mod conflicts, etc.)
 - [ ] More robust mod loading settings. (e.g. disable certain mods)
 - [ ] Provide ingame GUI for settings.
+- [ ] Display mod conflict/dependencies info in GUI.
+- [ ] More management options (e.g. copy steam mods to local, custom mod lists, delete loc. mods, unsub steam mods, etc.)
+- [ ] Custom ingame Steam upload UI.
+- [ ] Manage game texture loading from Steam workshop. (e.g. conflict resolution)
+- [ ] Provode mod configuration settings in GUI. (write mod specific config file if provided)
 
 # Contact
 
