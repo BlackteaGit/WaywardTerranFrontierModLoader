@@ -21,8 +21,10 @@ namespace WTFModLoader
         {
             BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
             SCREEN_MANAGER.GameSounds[1].play();
-            mods.OpenSettings();
+            mods.OpenMods();
             typeof(RootMenuRev2).GetField("popupActive", flags).SetValue(instance, true);
+            (typeof(RootMenuRev2).GetField("popupDelete", flags).GetValue(instance) as GuiElement).isVisible = false;
+
             //this.popupDelete.isVisible = false;
         }
     }

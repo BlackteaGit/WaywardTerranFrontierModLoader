@@ -4,8 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WaywardExtensions;
+using WTFModLoader.Manager;
 
 namespace WTFModLoader
 {
@@ -27,108 +30,56 @@ namespace WTFModLoader
 			this.screenHeight = SCREEN_MANAGER.Device.Viewport.Height;
 			if (this.popupListingsRoot.isVisible)
 			{
-				this.popupListingsRoot.reposition(this.screenWidth / 2 - (int)this.popupSettingSize.X / 2, this.screenHeight / 2 - (int)this.popupSettingSize.Y / 2, false);
+				this.popupListingsRoot.reposition(this.screenWidth / 2 - (int)this.popupModsSize.X / 2, this.screenHeight / 2 - (int)this.popupModsSize.Y / 2, false);
 				return;
 			}
-			this.popupListingsRoot.reposition(this.screenWidth / 2 - (int)this.popupSettingSize.X / 2 - this.popupListingsRoot.width, this.screenHeight / 2 - (int)this.popupSettingSize.Y / 2, false);
+			this.popupListingsRoot.reposition(this.screenWidth / 2 - (int)this.popupModsSize.X / 2 - this.popupListingsRoot.width, this.screenHeight / 2 - (int)this.popupModsSize.Y / 2, false);
 		}
 
 		private void createElemenets()
 		{
 			Color color = new Color(196, 250, 255, 210);
 			Color baseColor = new Color(0, 0, 0, 198);
-			int bheight = 360;
-			this.popupCanvas.Add(new Canvas("SettingsUnderlay", SCREEN_MANAGER.white, this.screenWidth / 2 - (int)this.popupSettingSize.X / 2, this.screenHeight / 2 - (int)this.popupSettingSize.Y / 2 + 400, 0, 0, (int)this.popupSettingSize.X, (int)this.popupSettingSize.Y, SortType.vertical, baseColor));
+			int bheight = (int)popupModsSize.Y-40-48;//360;
+			this.popupCanvas.Add(new Canvas("SettingsUnderlay", SCREEN_MANAGER.white, this.screenWidth / 2 - (int)this.popupModsSize.X / 2, this.screenHeight / 2 - (int)this.popupModsSize.Y / 2 + 400, 0, 0, (int)this.popupModsSize.X, (int)this.popupModsSize.Y, SortType.vertical, baseColor));
 			this.popupListingsRoot = this.popupCanvas.Last<GuiElement>();
-			this.popupListingsRoot.addLabel("Mods", SCREEN_MANAGER.FF20, 32, 0, 220, 40, color);
+			popupListingsRoot.AddSelectorCanvas("Sort Labels", SCREEN_MANAGER.white, 0, 0, (int)this.popupModsSize.X, 40, SortType.horizontal);
+			this.popupListingsRoot.elementList.Last<GuiElement>().addLabel("Avaible Mods", SCREEN_MANAGER.FF20, 8, 0, (int)this.popupModsSize.X / 2, 40, CONFIG.textColorDark);
+			this.popupListingsRoot.elementList.Last<GuiElement>().addLabel("Mod Settings", SCREEN_MANAGER.FF20, 0, 0, (int)this.popupModsSize.X / 2 - 8, 40, CONFIG.textColorDark);
+			popupListingsRoot.AddSelectorCanvas("Sort Mod Data", SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X, bheight, SortType.horizontal);
+			this.scrollModsCanvas = (ScrollCanvas)popupListingsRoot.elementList.Last<GuiElement>().AddScrollCanvas("enabled scroll", SCREEN_MANAGER.white, 0, 2, (int)this.popupModsSize.X / 2, bheight - 6, SortType.vertical);
+			popupListingsRoot.elementList.Last<GuiElement>().AddSelectorCanvas("Sort Mod Settings", SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2, bheight - 8, SortType.vertical);
+			var sortSettingsCanvas = popupListingsRoot.elementList.Last<GuiElement>().elementList.Last<GuiElement>();
+			sortSettingsCanvas.addLabel("", SCREEN_MANAGER.FF20, 8, 0, (int)this.popupModsSize.X / 2 - 16, 40, color);
+			this.modTitleLabel = (Label)sortSettingsCanvas.elementList.Last<GuiElement>();
 
-			GuiElement enabledCanvas = this.popupListingsRoot.AddCanvas("Enabled", SCREEN_MANAGER.white, 0, 2, (int)this.popupSettingSize.X, bheight, SortType.vertical);
-			enabledCanvas.addLabel("Enabled Mods", SCREEN_MANAGER.FF16, 32, 0, 220, 40, color);
-			int bheight2 = 32;
-			int bwidth = 128;
+			sortSettingsCanvas.AddSelectorCanvas("Sort Data Labels", SCREEN_MANAGER.transparentBlack, 0, 0, (int)this.popupModsSize.X / 2, 80, SortType.vertical);
+			var sortDataLabels = sortSettingsCanvas.elementList.Last<GuiElement>();
+
+			sortDataLabels.addLabel("Author:", SCREEN_MANAGER.FF12, 8, 0, sortDataLabels.width -8, 20, color);
+			this.modAuthorLabel = (Label)sortDataLabels.elementList.Last<GuiElement>();
+			sortDataLabels.addLabel("Version:", SCREEN_MANAGER.FF12, 8, 0, sortDataLabels.width -8, 20, color);
+			this.modVersionLabel = (Label)sortDataLabels.elementList.Last<GuiElement>();
+			sortDataLabels.addLabel("Target game version:", SCREEN_MANAGER.FF12, 8, 0, sortDataLabels.width -8, 20, color);
+			this.gameVersionLabel = (Label)sortDataLabels.elementList.Last<GuiElement>();
+			sortDataLabels.addLabel("Source:", SCREEN_MANAGER.FF12, 8, 0, sortDataLabels.width - 8, 20, color);
+			this.modSourceLabel = (Label)sortDataLabels.elementList.Last<GuiElement>();
 
 
-			GuiElement guiElement2;// = enabledCanvas.AddSelectorCanvas("Screen Mode options", SCREEN_MANAGER.white, 0, 4, (int)this.popupSettingSize.X, 40, SortType.horizontal);
-			/*
-			this.settings_FullScreen = guiElement2.AddCheckBoxAdv("Fullscreen", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_Borderless = guiElement2.AddCheckBoxAdv("Borderless", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_Windowed = guiElement2.AddCheckBoxAdv("Windowed", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			enabledCanvas.AddCanvas("Resolution labels", SCREEN_MANAGER.white, 0, 2, (int)this.popupSettingSize.X, 28, SortType.horizontal);
-			enabledCanvas.elementList.Last<GuiElement>().addLabel("Full screen resolution", SCREEN_MANAGER.FF12, 32, 0, 170, 24, color);
-			enabledCanvas.elementList.Last<GuiElement>().addLabel("Windowed resolution", SCREEN_MANAGER.FF12, 32, 0, 80, 24, color);
-			int num = 32;
-			guiElement2 = enabledCanvas.AddCanvas("Resolution options", SCREEN_MANAGER.white, 0, 0, (int)this.popupSettingSize.X, num + 6, SortType.horizontal);
-			guiElement2.addLabel("x:", SCREEN_MANAGER.FF12, 8, 0, 10, num, color);
-			this.inputFieldList.Add(guiElement2.AddInputField("FS width", SCREEN_MANAGER.white, 10, 2, 60, num, new InputField.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color, TextInputType.resolution));
-			this.settings_FS_X = guiElement2.elementList.Last<GuiElement>();
-			guiElement2.addLabel("y:", SCREEN_MANAGER.FF12, 8, 0, 10, num, color);
-			this.inputFieldList.Add(guiElement2.AddInputField("FS width", SCREEN_MANAGER.white, 10, 2, 60, num, new InputField.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color, TextInputType.resolution));
-			this.settings_FS_Y = guiElement2.elementList.Last<GuiElement>();
-			guiElement2.addLabel("x:", SCREEN_MANAGER.FF12, 40, 0, 10, num, color);
-			this.inputFieldList.Add(guiElement2.AddInputField("FS width", SCREEN_MANAGER.white, 10, 2, 60, num, new InputField.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color, TextInputType.resolution));
-			this.settings_Win_X = guiElement2.elementList.Last<GuiElement>();
-			guiElement2.addLabel("y:", SCREEN_MANAGER.FF12, 8, 0, 10, num, color);
-			this.inputFieldList.Add(guiElement2.AddInputField("FS width", SCREEN_MANAGER.white, 10, 2, 60, num, new InputField.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color, TextInputType.resolution));
-			this.settings_Win_Y = guiElement2.elementList.Last<GuiElement>();
-			enabledCanvas.addLabel("Use alt + enter to switch window mode while ingame", SCREEN_MANAGER.FF12, 14, 2, 220, 20, color * 0.75f);
-			bheight2 = 24;
-			bwidth = 194;
-			enabledCanvas.addLabel("Interior light quality", SCREEN_MANAGER.FF16, 32, 0, 220, 28, color);
-			guiElement2 = enabledCanvas.AddSelectorCanvas("Interior quality options", SCREEN_MANAGER.white, 0, 2, (int)this.popupSettingSize.X, 32, SortType.horizontal);
-			this.settings_Interior_Full = guiElement2.AddCheckBoxAdv("High", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_Interior_Normal = guiElement2.AddCheckBoxAdv("Normal", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			bwidth = 128;
-			enabledCanvas.addLabel("Background quality", SCREEN_MANAGER.FF16, 32, 0, 220, 28, color);
-			guiElement2 = enabledCanvas.AddSelectorCanvas("Background quality options", SCREEN_MANAGER.white, 0, 2, (int)this.popupSettingSize.X, 32, SortType.horizontal);
-			this.settings_BCG_Full = guiElement2.AddCheckBoxAdv("Full", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_BCG_Limited = guiElement2.AddCheckBoxAdv("Limited", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_BCG_Low = guiElement2.AddCheckBoxAdv("Low", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
+			sortSettingsCanvas.AddScrollCanvas("description scroll", SCREEN_MANAGER.white, 8, 12, (int)this.popupModsSize.X / 2 - 16 , 426, SortType.vertical);
+			this.descriptionTextScroll = sortSettingsCanvas.elementList.Last<GuiElement>();
 			
 
+			var bheight2 = 40;
+			var bwidth = (int)this.popupModsSize.X / 4-8;
+			this.selectModSettingsCanvas = sortSettingsCanvas.AddSelectorCanvas("Mod state select", SCREEN_MANAGER.white, 0, 10, (int)this.popupModsSize.X / 2 - 4, 48, SortType.horizontal);
+			this.settings_Mod_Enabled = selectModSettingsCanvas.AddCheckBoxAdv("Enabled", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent((sender) => updateSettings(this.selectedEntry, true)), SCREEN_MANAGER.FF20, Color.LightGreen);
+			this.settings_Mod_Disabled = selectModSettingsCanvas.AddCheckBoxAdv("Disabled", SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent((sender) => updateSettings(this.selectedEntry, false)), SCREEN_MANAGER.FF20, CONFIG.textColorRed);
 
-			bwidth = 128;
-			enabledCanvas.addLabel("Postprocessing", SCREEN_MANAGER.FF16, 32, 0, 220, 28, color);
-			guiElement2 = enabledCanvas.AddCanvas("Postprocessing options", SCREEN_MANAGER.white, 0, 2, (int)this.popupSettingSize.X, 32, SortType.horizontal);
-			this.settings_Post_LightShafts = guiElement2.AddCheckBoxAdv("Lightshaft", SCREEN_MANAGER.white, SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_Post_Bloom = guiElement2.AddCheckBoxAdv("HDR Bloom", SCREEN_MANAGER.white, SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_Post_FXAA = guiElement2.AddCheckBoxAdv("FXAA", SCREEN_MANAGER.white, SCREEN_MANAGER.white, 4, 4, bwidth, bheight2, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			guiElement2 = this.popupListingsRoot.AddCanvas("Labels bot", SCREEN_MANAGER.white, 0, 2, (int)this.popupSettingSize.X, 40, SortType.horizontal);
-			guiElement2.addLabel("Gameplay", SCREEN_MANAGER.FF20, 32, 0, 160, 40, color);
-			guiElement2.addLabel("Audio", SCREEN_MANAGER.FF20, 32, 0, 100, 40, color);
-
-			GuiElement guiElement3 = this.popupListingsRoot.AddCanvas("Bot horizontal", SCREEN_MANAGER.white, 0, 0, (int)this.popupSettingSize.X, 182, SortType.horizontal);
-			guiElement2 = guiElement3.AddCanvas("Gameplay", SCREEN_MANAGER.white, 0, 0, 197, 180, SortType.vertical);
-			this.settings_showGUI = guiElement2.AddCheckBox("Show GUI", SCREEN_MANAGER.white, SCREEN_MANAGER.MenuArt[269], 0, 2, 197, 28, new CheckBoxR2.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_dragArrow = guiElement2.AddCheckBox("OneHand Travel", SCREEN_MANAGER.white, SCREEN_MANAGER.MenuArt[269], 0, 2, 197, 28, new CheckBoxR2.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_floatText = guiElement2.AddCheckBox("Float Text", SCREEN_MANAGER.white, SCREEN_MANAGER.MenuArt[269], 0, 2, 197, 28, new CheckBoxR2.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_hwCursor = guiElement2.AddCheckBox("HW cursor", SCREEN_MANAGER.white, SCREEN_MANAGER.MenuArt[269], 0, 2, 197, 28, new CheckBoxR2.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_dockAssist = guiElement2.AddCheckBox("Dock Assist", SCREEN_MANAGER.white, SCREEN_MANAGER.MenuArt[269], 0, 2, 197, 28, new CheckBoxR2.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_turnAssist = guiElement2.AddCheckBox("Turn Assist", SCREEN_MANAGER.white, SCREEN_MANAGER.MenuArt[269], 0, 2, 197, 28, new CheckBoxR2.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-
-			guiElement2 = guiElement3.AddCanvas("Audi / Min camera", SCREEN_MANAGER.white, 2, 0, 197, 180, SortType.vertical, new Color(0, 0, 0, 0));
-			guiElement2 = guiElement2.AddCanvas("Audio", SCREEN_MANAGER.white, 0, 0, 197, 70, SortType.vertical);
-			guiElement2.addLabel("Master Volume", SCREEN_MANAGER.FF12, 32, -4, 160, 18, color);
-			guiElement2.addSlider("Master Volume", SCREEN_MANAGER.white, SCREEN_MANAGER.white, 4, 4, 190, 22, 0f, 1f, new Slider.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12);
-			this.settings_sfxVolume = guiElement2.elementList.Last<GuiElement>();
-			guiElement2.addLabel("Music Volume", SCREEN_MANAGER.FF12, 32, -12, 160, 14, color);
-			guiElement2.addSlider("Music Volume", SCREEN_MANAGER.white, SCREEN_MANAGER.white, 4, 6, 190, 22, 0f, 1f, new Slider.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12);
-			this.settings_musicVolume = guiElement2.elementList.Last<GuiElement>();
-			guiElement2 = guiElement3.elementList.Last<GuiElement>().AddCanvas("Min Cam canv", SCREEN_MANAGER.white, 0, 2, 197, 108, SortType.vertical);
-			guiElement2.addLabel("Min Camera distance", SCREEN_MANAGER.FF12, 32, -4, 160, 18, color);
-			guiElement2.addSlider("Min Camera distance", SCREEN_MANAGER.white, SCREEN_MANAGER.white, 4, 6, 190, 22, 450f, 1500f, new Slider.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, 980f, 950f);
-			this.settings_minCameraDist = guiElement2.elementList.Last<GuiElement>();
-			guiElement2.addLabel("Gui Scale", SCREEN_MANAGER.FF12, 32, -8, 160, 18, color);
-			guiElement2.addSlider("Gui Scale", SCREEN_MANAGER.white, SCREEN_MANAGER.white, 4, 6, 190, 22, 1f, 3f, new Slider.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, 1f);
-			this.settings_guiScale = guiElement2.elementList.Last<GuiElement>();
-			this.settings_extraZoom = guiElement2.AddCheckBox("Extra zoom", SCREEN_MANAGER.white, SCREEN_MANAGER.MenuArt[269], 0, 2, 197, 28, new CheckBoxR2.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			guiElement2 = this.popupListingsRoot.AddSelectorCanvas("Camera selection", SCREEN_MANAGER.white, 0, 0, (int)this.popupSettingSize.X, 44, SortType.horizontal);
-			guiElement2.addLabel("Camera", SCREEN_MANAGER.FF16, 32, -4, 72, 40, color);
-			this.settings_cameraUnlocked = guiElement2.AddCheckBoxAdv("Unlocked", SCREEN_MANAGER.white, 4, 2, 142, 32, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			this.settings_cameraCentered = guiElement2.AddCheckBoxAdv("Centered", SCREEN_MANAGER.white, 4, 2, 142, 32, new CheckBoxAdv.ClickEvent(this.placeholderF), SCREEN_MANAGER.FF12, color);
-			*/
-
-			guiElement2 = this.popupListingsRoot.AddCanvas("Control", SCREEN_MANAGER.white, 0, 0, (int)this.popupSettingSize.X, 48, SortType.horizontal);
-			guiElement2.AddButton("Apply", SCREEN_MANAGER.white, 4, 4, 113, 40, new BasicButton.ClickEvent(this.applySettings), SCREEN_MANAGER.FF20, color);
+			
+			var offsetcenter = (int)this.popupModsSize.X / 2 - (113 + 158 + 113) / 2;
+			var guiElement2 = this.popupListingsRoot.AddCanvas("Control", SCREEN_MANAGER.white, 0, 0, (int)this.popupModsSize.X, 48, SortType.horizontal);
+			guiElement2.AddButton("Apply", SCREEN_MANAGER.white, offsetcenter + 4, 4, 113, 40, new BasicButton.ClickEvent(this.applySettings), SCREEN_MANAGER.FF20, color);
 			guiElement2.AddButton("Apply & Close", SCREEN_MANAGER.white, 4, 4, 158, 40, new BasicButton.ClickEvent(this.actionApplyCloseSettings), SCREEN_MANAGER.FF20, color);
 			guiElement2.AddButton("Close", SCREEN_MANAGER.white, 4, 4, 113, 40, new BasicButton.ClickEvent(this.actionCloseSettings), SCREEN_MANAGER.FF20, CONFIG.textColorRed);
 			GuiElement guiElement4 = (BasicButton)guiElement2.elementList.Last<GuiElement>();
@@ -137,7 +88,7 @@ namespace WTFModLoader
 			this.popupCanvas.Last<GuiElement>().setVisibilityFadeSelf(false);
 		}
 
-		public void OpenSettings()
+		public void OpenMods()
 		{
 			this.loadSettings();
 			this.active = true;
@@ -165,13 +116,138 @@ namespace WTFModLoader
 
 		public void applySettings(object sender)
 		{
+			if (this._tempActiveMods.IsValueCreated)
+			{
+				WTFModLoader._modManager.ActiveMods.Clear();
+				WTFModLoader._modManager.ActiveMods.AddRange(this._tempActiveMods.Value);				
+			}
+			if(this._tempInactiveMods.IsValueCreated)
+            {
+				WTFModLoader._modManager.InactiveMods.Value.Clear();
+				WTFModLoader._modManager.InactiveMods.Value.AddRange(this._tempInactiveMods.Value);
+			}
+			ModDbManager.writeModCfgData();
+			ModDbManager.writeCfgData();
+			SCREEN_MANAGER.alerts.Enqueue("Mod settings saved and will be applied on the next game start.");
 		}
 
 		public void loadSettings()
 		{
+			this.scrollModsCanvas.elementList.Clear();
+
+			UpdateModInfo(null);
+			WTFModLoader._modManager.ActiveMods.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+			foreach (var modentry in WTFModLoader._modManager.ActiveMods)
+			{
+				string status = "active";				
+				this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
+				//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = Color.LightGreen;
+				this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = Color.LightGreen;
+			}
+
+			if (WTFModLoader._modManager.InactiveMods.IsValueCreated)
+			{
+				WTFModLoader._modManager.InactiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+				foreach (var modentry in WTFModLoader._modManager.InactiveMods.Value)
+				{
+					string status = "disabled";
+					this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
+					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorMedium;
+				}
+			}
+
+			if (WTFModLoader._modManager.IssuedMods.IsValueCreated)
+			{
+				foreach (var modentry in WTFModLoader._modManager.IssuedMods.Value)
+				{
+					
+					string issue = "unknown error";
+					if (modentry.Issue != "")
+					{
+						issue = "loading error: " + modentry.Issue;
+					}
+					this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), issue, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
+					//this.scrollModsCanvas.elementList.Last().elementList.ForEach((label) => label.baseColor = CONFIG.textColorRed);
+					//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = CONFIG.textColorRed;
+					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorRed;
+				}
+			}
+			this._tempActiveMods.Value.Clear();
+			this._tempActiveMods.Value.AddRange(WTFModLoader._modManager.ActiveMods);
+			this._tempActiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+			if (WTFModLoader._modManager.InactiveMods.IsValueCreated)
+			{
+				this._tempInactiveMods.Value.Clear();
+				this._tempInactiveMods.Value.AddRange(WTFModLoader._modManager.InactiveMods.Value);
+				this._tempInactiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+			}
 
 		}
 
+		private string shortenEntryTitle(ModEntry modentry)
+        {
+			var titletext = modentry.ModMetadata.wrappedName;
+			while (SCREEN_MANAGER.FF16.MeasureString(titletext).X > (int)this.popupModsSize.X / 2 - 22)
+			{
+				titletext = titletext.Substring(0, titletext.Length - 4);
+				titletext = titletext + "..";
+			}
+			return titletext;
+		}
+
+		public void updateSettings(ModEntry selected, bool enable)
+		{
+			
+			//move active/inactive mods
+			if(!enable && this._tempActiveMods.Value.Contains(selected))
+            {
+				this._tempActiveMods.Value.Remove(selected);
+				this._tempInactiveMods.Value.Add(selected);
+				this._tempActiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+				this._tempInactiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+			}
+			else if (enable && this._tempInactiveMods.Value.Contains(selected))
+            {
+				this._tempInactiveMods.Value.Remove(selected);
+				this._tempActiveMods.Value.Add(selected);
+				this._tempActiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+				this._tempInactiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+			}
+			this.scrollModsCanvas.elementList.Clear();
+			UpdateModInfo(selected);
+			foreach (var modentry in this._tempActiveMods.Value)
+			{
+				string status = "active";
+				this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
+				//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = Color.LightGreen;
+				this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = Color.LightGreen;
+			}
+			if (this._tempInactiveMods.IsValueCreated)
+			{
+				foreach (var modentry in this._tempInactiveMods.Value)
+				{
+					string status = "disabled";
+					this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
+					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorMedium;
+				}
+			}
+			if (WTFModLoader._modManager.IssuedMods.IsValueCreated)
+			{
+				foreach (var modentry in WTFModLoader._modManager.IssuedMods.Value)
+				{
+					string issue = "unknown error";
+					if (modentry.Issue != "")
+					{
+						issue = "loading error: " + modentry.Issue;
+					}
+					this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), issue, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
+					//this.scrollModsCanvas.elementList.Last().elementList.ForEach((label) => label.baseColor = CONFIG.textColorRed);
+					//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = CONFIG.textColorRed;
+					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorRed;
+				}
+			}
+
+		}
 		public void InputChar(char character)
 		{
 			foreach (GuiElement guiElement in this.inputFieldList)
@@ -204,87 +280,141 @@ namespace WTFModLoader
 			}
 		}
 
+		public void UpdateModInfo(ModEntry selected)
+		{
+			BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+			this.selectedEntry = selected;
+			if(selected == null)
+			{
+				this.descriptionTextScroll.elementList.Clear();
+				modTitleLabel.setText("");
+				modAuthorLabel.setText("Author:");
+				modSourceLabel.setText("Source:");
+				modVersionLabel.setText("Version:");
+				gameVersionLabel.setText("Target game version:");
+				settings_Mod_Enabled.state = false;
+				settings_Mod_Disabled.state = false;
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectorID", flags).SetValue(this.selectModSettingsCanvas, -1);
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectionBox", flags).SetValue(this.selectModSettingsCanvas, Rectangle.Empty);
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("animateBox", flags).SetValue(this.selectModSettingsCanvas, false);
+
+
+			}
+			else
+            {
+	
+				UpdateDescriptionText(selected.ModMetadata.Description, SCREEN_MANAGER.FF12);
+				var titletext = selected.ModMetadata.wrappedName;
+				while(SCREEN_MANAGER.FF20.MeasureString(titletext).X > modTitleLabel.width)
+				{
+					titletext = titletext.Substring(0, titletext.Length - 4);
+					titletext = titletext + "..";
+				}
+				modTitleLabel.setText(titletext);
+				string source = "n/a";
+				if (selected.ModType.Assembly.Location.Contains(WTFModLoader.ModsDirectory))
+				{
+					source = "Local Mod";
+				}
+				else if (selected.ModType.Assembly.Location.Contains(WTFModLoader.SteamModsDirectory))
+				{
+					source = "Steam Mod";
+				}
+
+				modSourceLabel.setText("Source: " + source);
+
+				if (selected.ModMetadata.Version != "0.0")
+				{
+					modVersionLabel.setText("Version: " + selected.ModMetadata.Version);
+				}
+				else
+				{
+					modVersionLabel.setText("Version: " + "n/a");
+				}
+				
+				if (selected.ModMetadata.Gameversion != "" && selected.ModMetadata.Gameversion != null)
+				{
+					gameVersionLabel.setText("Target game version: " + selected.ModMetadata.Gameversion);
+				}
+				else
+				{
+					gameVersionLabel.setText("Target game version: " + "n/a");
+				}
+
+				if (selected.ModMetadata.Author != "" && selected.ModMetadata.Author != null)
+				{
+					modAuthorLabel.setText("Author: " + selected.ModMetadata.Author);
+				}
+				else
+				{
+					modAuthorLabel.setText("Author: " + "n/a");
+				}
+
+				if(this._tempActiveMods.Value.Contains(selected))
+                {
+					settings_Mod_Enabled.state = true;
+					settings_Mod_Disabled.state = false;
+				}
+				else
+                {
+					settings_Mod_Enabled.state = false;
+					settings_Mod_Disabled.state = true;
+				}
+
+			}
+		}
+
+		public void UpdateDescriptionText(string text, SpriteFont font)
+		{
+			var wrapedText = ToolBox.WrapDynamicText(font, text, descriptionTextScroll.width, 10f, 1f);
+			this.descriptionTextScroll.elementList.Clear();
+			for (int i = 0; i < wrapedText.textLines.Count; i++)
+			{
+				this.descriptionTextScroll.AddTextBox(wrapedText.textLines[i], font, 0, 0, descriptionTextScroll.width, (int)font.MeasureString(wrapedText.textLines[i]).Y + 1, new Color(177, 197, 200), VerticalAlignment.top, 18, 1f, 10f, 1f);
+			}
+		}
+
+		private Lazy<List<ModEntry>> _tempInactiveMods = new Lazy<List<ModEntry>>();
+
+		private Lazy<List<ModEntry>> _tempActiveMods = new Lazy<List<ModEntry>>();
+
+		private GuiElement descriptionTextScroll;
+
+		private Label modTitleLabel;
+
+		private Label modAuthorLabel;
+
+		private Label modVersionLabel;
+
+		private Label modSourceLabel;
+
+		private Label gameVersionLabel;
+
+		private ScrollCanvas scrollModsCanvas;
+
 		public WidgetMods.CloseEvent closeEvent;
 
 		private List<GuiElement> popupCanvas;
 
-		private GuiElement menuUnder;
-
-		private Rectangle mousePos;
-
 		public bool active;
 
-		private Vector2 popupAsize = new Vector2(220f, 82f);
-
-		private Vector2 popupSettingSize = new Vector2(400f, 720f);
+		private Vector2 popupModsSize = new Vector2(1200f, 720f);
 
 		private List<GuiElement> inputFieldList;
 
 		private GuiElement popupListingsRoot;
 
-		private GuiElement settings_FullScreen;
-
-		private GuiElement settings_Windowed;
-
-		private GuiElement settings_Borderless;
-
-		private GuiElement settings_FS_X;
-
-		private GuiElement settings_FS_Y;
-
-		private GuiElement settings_Win_X;
-
-		private GuiElement settings_Win_Y;
-
-		private GuiElement settings_BCG_Full;
-
-		private GuiElement settings_BCG_Limited;
-
-		private GuiElement settings_BCG_Low;
-
-		private GuiElement settings_Post_LightShafts;
-
-		private GuiElement settings_Post_Bloom;
-
-		private GuiElement settings_Post_FXAA;
-
-		private GuiElement settings_Autosave;
-
-		private GuiElement settings_showGUI;
-
-		private GuiElement settings_dragArrow;
-
-		private GuiElement settings_floatText;
-
-		private GuiElement settings_hwCursor;
-
-		private GuiElement settings_sfxVolume;
-
-		private GuiElement settings_musicVolume;
-
-		private GuiElement settings_cameraUnlocked;
-
-		private GuiElement settings_cameraCentered;
-
-		private GuiElement settings_dockAssist;
-
-		private GuiElement settings_turnAssist;
-
 		private int screenHeight;
 
 		private int screenWidth;
+        private GuiElement selectModSettingsCanvas;
+        private GuiElement settings_Mod_Enabled;
 
-		private GuiElement settings_Interior_Full;
+		private GuiElement settings_Mod_Disabled;
 
-		private GuiElement settings_Interior_Normal;
+        private ModEntry selectedEntry;
 
-		private GuiElement settings_minCameraDist;
-
-		private GuiElement settings_guiScale;
-
-		private GuiElement settings_extraZoom;
-
-		public delegate void CloseEvent(GuiElement sender);
+        public delegate void CloseEvent(GuiElement sender);
 	}
 }
 
