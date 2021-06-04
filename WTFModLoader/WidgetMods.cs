@@ -21,7 +21,7 @@ namespace WTFModLoader
 			this.screenHeight = SCREEN_MANAGER.Device.Viewport.Height;
 			this.inputFieldList = new List<GuiElement>();
 			this.popupCanvas = new List<GuiElement>();
-			this.createElemenets();
+			this.createElements();
 		}
 
 		public void Resize()
@@ -36,26 +36,29 @@ namespace WTFModLoader
 			this.popupListingsRoot.reposition(this.screenWidth / 2 - (int)this.popupModsSize.X / 2 - this.popupListingsRoot.width, this.screenHeight / 2 - (int)this.popupModsSize.Y / 2, false);
 		}
 
-		private void createElemenets()
+		private void createElements()
 		{
+			BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
 			Color color = new Color(196, 250, 255, 210);
 			Color baseColor = new Color(0, 0, 0, 198);
 			int bheight = (int)popupModsSize.Y-40-48;//360;
 			this.popupCanvas.Add(new Canvas("SettingsUnderlay", SCREEN_MANAGER.white, this.screenWidth / 2 - (int)this.popupModsSize.X / 2, this.screenHeight / 2 - (int)this.popupModsSize.Y / 2 + 400, 0, 0, (int)this.popupModsSize.X, (int)this.popupModsSize.Y, SortType.vertical, baseColor));
 			this.popupListingsRoot = this.popupCanvas.Last<GuiElement>();
 			popupListingsRoot.AddSelectorCanvas("Sort Labels", SCREEN_MANAGER.white, 0, 0, (int)this.popupModsSize.X, 40, SortType.horizontal);
+			typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(this.popupListingsRoot.elementList.Last<GuiElement>(), false);
 			this.popupListingsRoot.elementList.Last<GuiElement>().addLabel("Avaible Mods", SCREEN_MANAGER.FF20, 8, 0, (int)this.popupModsSize.X / 2, 40, CONFIG.textColorDark);
 			this.popupListingsRoot.elementList.Last<GuiElement>().addLabel("Mod Settings", SCREEN_MANAGER.FF20, 0, 0, (int)this.popupModsSize.X / 2 - 8, 40, CONFIG.textColorDark);
 			popupListingsRoot.AddSelectorCanvas("Sort Mod Data", SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X, bheight, SortType.horizontal);
+			typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(popupListingsRoot.elementList.Last<GuiElement>(), false);
 			this.scrollModsCanvas = (ScrollCanvas)popupListingsRoot.elementList.Last<GuiElement>().AddScrollCanvas("enabled scroll", SCREEN_MANAGER.white, 0, 2, (int)this.popupModsSize.X / 2, bheight - 6, SortType.vertical);
 			popupListingsRoot.elementList.Last<GuiElement>().AddSelectorCanvas("Sort Mod Settings", SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2, bheight - 8, SortType.vertical);
 			var sortSettingsCanvas = popupListingsRoot.elementList.Last<GuiElement>().elementList.Last<GuiElement>();
+			typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(sortSettingsCanvas, false);
 			sortSettingsCanvas.addLabel("", SCREEN_MANAGER.FF20, 8, 0, (int)this.popupModsSize.X / 2 - 16, 40, color);
 			this.modTitleLabel = (Label)sortSettingsCanvas.elementList.Last<GuiElement>();
-
 			sortSettingsCanvas.AddSelectorCanvas("Sort Data Labels", SCREEN_MANAGER.transparentBlack, 0, 0, (int)this.popupModsSize.X / 2, 80, SortType.vertical);
 			var sortDataLabels = sortSettingsCanvas.elementList.Last<GuiElement>();
-
+			typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(sortDataLabels, false);
 			sortDataLabels.addLabel("Author:", SCREEN_MANAGER.FF12, 8, 0, sortDataLabels.width -8, 20, color);
 			this.modAuthorLabel = (Label)sortDataLabels.elementList.Last<GuiElement>();
 			sortDataLabels.addLabel("Version:", SCREEN_MANAGER.FF12, 8, 0, sortDataLabels.width -8, 20, color);
@@ -197,7 +200,6 @@ namespace WTFModLoader
 
 		public void updateSettings(ModEntry selected, bool enable)
 		{
-			
 			//move active/inactive mods
 			if(!enable && this._tempActiveMods.Value.Contains(selected))
             {
@@ -221,6 +223,10 @@ namespace WTFModLoader
 				this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
 				//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = Color.LightGreen;
 				this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = Color.LightGreen;
+				if(modentry.ModMetadata == selected.ModMetadata)
+                {
+					this.scrollModsCanvas.elementList.Last().hasFocus = true;
+				}
 			}
 			if (this._tempInactiveMods.IsValueCreated)
 			{
@@ -229,6 +235,11 @@ namespace WTFModLoader
 					string status = "disabled";
 					this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
 					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorMedium;
+					if (modentry.ModMetadata == selected.ModMetadata)
+					{
+						this.scrollModsCanvas.elementList.Last().hasFocus = true;
+					}
+
 				}
 			}
 			if (WTFModLoader._modManager.IssuedMods.IsValueCreated)
@@ -244,6 +255,11 @@ namespace WTFModLoader
 					//this.scrollModsCanvas.elementList.Last().elementList.ForEach((label) => label.baseColor = CONFIG.textColorRed);
 					//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = CONFIG.textColorRed;
 					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorRed;
+					if (modentry.ModMetadata == selected.ModMetadata)
+					{
+						this.scrollModsCanvas.elementList.Last().hasFocus = true;
+					}
+
 				}
 			}
 
@@ -294,15 +310,24 @@ namespace WTFModLoader
 				gameVersionLabel.setText("Target game version:");
 				settings_Mod_Enabled.state = false;
 				settings_Mod_Disabled.state = false;
-				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectorID", flags).SetValue(this.selectModSettingsCanvas, -1);
-				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectionBox", flags).SetValue(this.selectModSettingsCanvas, Rectangle.Empty);
-				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("animateBox", flags).SetValue(this.selectModSettingsCanvas, false);
-
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(this.selectModSettingsCanvas, false);
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectionColor", flags).SetValue(this.selectModSettingsCanvas, Color.Transparent);
+				foreach (var element in this.selectModSettingsCanvas.elementList)
+                {
+					(element as CheckBoxAdv).highAlpha = (element as CheckBoxAdv).lowAlpha;
+				}
+				
 
 			}
 			else
             {
-	
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(this.selectModSettingsCanvas, true);
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectionColor", flags).SetValue(this.selectModSettingsCanvas, new Color(197, 250, 255, 42));
+				foreach (var element in this.selectModSettingsCanvas.elementList)
+                {
+					(element as CheckBoxAdv).highAlpha = 75;
+				}
+
 				UpdateDescriptionText(selected.ModMetadata.Description, SCREEN_MANAGER.FF12);
 				var titletext = selected.ModMetadata.wrappedName;
 				while(SCREEN_MANAGER.FF20.MeasureString(titletext).X > modTitleLabel.width)

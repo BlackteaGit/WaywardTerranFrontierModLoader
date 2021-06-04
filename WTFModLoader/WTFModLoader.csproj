@@ -60,6 +60,7 @@
     <Compile Include="Config\IFileConfigProvider.cs" />
     <Compile Include="Config\JsonConfigProvider.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="HarmonyHelpers.cs" />
     <Compile Include="HarmonyPatcher.cs" />
     <Compile Include="Manager\FileSystemModLoader.cs" />
     <Compile Include="Exceptions\ModCircularDependencyException.cs" />
