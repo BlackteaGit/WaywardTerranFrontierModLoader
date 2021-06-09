@@ -29,34 +29,39 @@ namespace WTFModLoader
 			}
 			else
 			{
-				string manifestDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);		
+				string manifestDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+				if(_modManager != null)
+				{
+					return;
+                }
 				String manifestDirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(manifestDirectory, System.IO.Path.Combine(@"0Harmony.dll")));
 				String rootdirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"0Harmony.dll")));
-
 				if (System.IO.File.Exists(manifestDirectoryFile) && System.IO.File.Exists(rootdirectoryFile))
 				{
 					String rootdirectoryBackupFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"0Harmony.dll.old")));
 					File.Copy(rootdirectoryFile, rootdirectoryBackupFile, true);
 					File.Delete(rootdirectoryFile);
 				}
+
 				manifestDirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(manifestDirectory, System.IO.Path.Combine(@"Newtonsoft.Json.dll")));
 				rootdirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"Newtonsoft.Json.dll")));
-
 				if (System.IO.File.Exists(manifestDirectoryFile) && System.IO.File.Exists(rootdirectoryFile))
 				{
 					String rootdirectoryBackupFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"Newtonsoft.Json.dll.old")));
 					File.Copy(rootdirectoryFile, rootdirectoryBackupFile, true);
 					File.Delete(rootdirectoryFile);
 				}
+
 				manifestDirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(manifestDirectory, System.IO.Path.Combine(@"SimpleInjector.dll")));
 				rootdirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"SimpleInjector.dll")));
-
 				if (System.IO.File.Exists(manifestDirectoryFile) && System.IO.File.Exists(rootdirectoryFile))
 				{
 					String rootdirectoryBackupFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"SimpleInjector.dll.old")));
 					File.Copy(rootdirectoryFile, rootdirectoryBackupFile, true);
 					File.Delete(rootdirectoryFile);
 				}
+
+
 				
 			}
 			EnsureFolderSetup();
@@ -83,6 +88,7 @@ namespace WTFModLoader
 				SteamModsDirectory = workshop;
 				ModsDirectory = mods;
 				Initialize();
+
 			}
 		}
 
