@@ -1,12 +1,10 @@
 ﻿
+using CoOpSpRpG;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Windows.Media.Imaging;
 using WaywardExtensions;
 using WTFModLoader.Config;
 using WTFModLoader.Infrastructure;
@@ -22,7 +20,7 @@ namespace WTFModLoader
 		public static string SteamModsDirectory { get; private set; }
 		public static void Initialize()
 		{
-			CurrentBuildVersion = "0.4";
+			
 			if(ModsDirectory == null || SteamModsDirectory == null)
 			{
 				LegacyLoad();
@@ -34,6 +32,7 @@ namespace WTFModLoader
 				{
 					return;
                 }
+				CurrentBuildVersion = "0.4";
 				String manifestDirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(manifestDirectory, System.IO.Path.Combine(@"0Harmony.dll")));
 				String rootdirectoryFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.Combine(@"0Harmony.dll")));
 				if (System.IO.File.Exists(manifestDirectoryFile) && System.IO.File.Exists(rootdirectoryFile))
@@ -94,6 +93,7 @@ namespace WTFModLoader
 
 		private static void LegacyLoad()
 		{
+			CurrentBuildVersion = "0.4";
 			string manifestDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
 					?? throw new InvalidOperationException("Could not determine operating directory. Is your folder structure correct? " +
 					"Try verifying game files in Steam, if you're using it.");
