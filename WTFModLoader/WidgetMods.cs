@@ -46,7 +46,7 @@ namespace WTFModLoader
 			this.popupListingsRoot = this.popupCanvas.Last<GuiElement>();
 			popupListingsRoot.AddSelectorCanvas("Sort Labels", SCREEN_MANAGER.white, 0, 0, (int)this.popupModsSize.X, 40, SortType.horizontal);
 			typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(this.popupListingsRoot.elementList.Last<GuiElement>(), false);
-			this.popupListingsRoot.elementList.Last<GuiElement>().addLabel("Avaible Mods", SCREEN_MANAGER.FF20, 8, 0, (int)this.popupModsSize.X / 2, 40, CONFIG.textColorDark);
+			this.popupListingsRoot.elementList.Last<GuiElement>().addLabel("Available Mods", SCREEN_MANAGER.FF20, 8, 0, (int)this.popupModsSize.X / 2, 40, CONFIG.textColorDark);
 			this.popupListingsRoot.elementList.Last<GuiElement>().addLabel("Mod Settings", SCREEN_MANAGER.FF20, 0, 0, (int)this.popupModsSize.X / 2 - 8, 40, CONFIG.textColorDark);
 			popupListingsRoot.AddSelectorCanvas("Sort Mod Data", SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X, bheight, SortType.horizontal);
 			typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(popupListingsRoot.elementList.Last<GuiElement>(), false);
