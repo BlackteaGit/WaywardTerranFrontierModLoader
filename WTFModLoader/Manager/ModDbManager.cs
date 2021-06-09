@@ -103,7 +103,7 @@ namespace WTFModLoader.Manager
 					{
 						string commandText2 = "insert or replace into inactivemods (location, name, version) values (@location, @name, @version)";
 						SQLiteCommand sqliteCommand2 = new SQLiteCommand(commandText2, modCfgCon);
-						sqliteCommand2.Parameters.Add("@location", DbType.String).Value = modentry.ModType.Assembly.Location;
+						sqliteCommand2.Parameters.Add("@location", DbType.String).Value = modentry.Source;
 						sqliteCommand2.Parameters.Add("@name", DbType.String).Value = modentry.ModMetadata.Name;
 						sqliteCommand2.Parameters.Add("@version", DbType.String).Value = modentry.ModMetadata.Version;
 						sqliteCommand2.ExecuteNonQuery();
@@ -121,7 +121,7 @@ namespace WTFModLoader.Manager
 		{
 			try
 			{
-				SQLiteCommand sqliteCommand = new SQLiteCommand("select count(name) from inactivemods where location = '" + entry.ModType.Assembly.Location + "' and name = @name and version = @version", modCfgCon);
+				SQLiteCommand sqliteCommand = new SQLiteCommand("select count(name) from inactivemods where location = '" + entry.Source + "' and name = @name and version = @version", modCfgCon);
 				sqliteCommand.Parameters.Add("@name", DbType.String).Value = entry.ModMetadata.Name;
 				sqliteCommand.Parameters.Add("@version", DbType.String).Value = entry.ModMetadata.Version;
 				return Convert.ToInt32(sqliteCommand.ExecuteScalar()) > 0;

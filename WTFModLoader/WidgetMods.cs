@@ -321,11 +321,23 @@ namespace WTFModLoader
 			}
 			else
             {
-				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(this.selectModSettingsCanvas, true);
-				typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectionColor", flags).SetValue(this.selectModSettingsCanvas, new Color(197, 250, 255, 42));
-				foreach (var element in this.selectModSettingsCanvas.elementList)
-                {
-					(element as CheckBoxAdv).highAlpha = 75;
+				if(selected.Issue != null)
+				{
+					typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(this.selectModSettingsCanvas, false);
+					typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectionColor", flags).SetValue(this.selectModSettingsCanvas, Color.Transparent);
+					foreach (var element in this.selectModSettingsCanvas.elementList)
+					{
+						(element as CheckBoxAdv).highAlpha = (element as CheckBoxAdv).lowAlpha;
+					}
+				}
+				else
+				{ 
+					typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("renderBrackets", flags).SetValue(this.selectModSettingsCanvas, true);
+					typeof(Canvas).Assembly.GetType("CoOpSpRpG.SelectorCanvas", throwOnError: true).GetField("selectionColor", flags).SetValue(this.selectModSettingsCanvas, new Color(197, 250, 255, 42));
+					foreach (var element in this.selectModSettingsCanvas.elementList)
+					{
+						(element as CheckBoxAdv).highAlpha = 75;
+					}
 				}
 
 				UpdateDescriptionText(selected.ModMetadata.Description, SCREEN_MANAGER.FF12);
@@ -337,11 +349,11 @@ namespace WTFModLoader
 				}
 				modTitleLabel.setText(titletext);
 				string source = "n/a";
-				if (selected.ModType.Assembly.Location.Contains(WTFModLoader.ModsDirectory))
+				if (selected.Source.Contains(WTFModLoader.ModsDirectory))
 				{
 					source = "Local Mod";
 				}
-				else if (selected.ModType.Assembly.Location.Contains(WTFModLoader.SteamModsDirectory))
+				else if (selected.Source.Contains(WTFModLoader.SteamModsDirectory))
 				{
 					source = "Steam Mod";
 				}
@@ -432,7 +444,9 @@ namespace WTFModLoader
 		private int screenHeight;
 
 		private int screenWidth;
+
         private GuiElement selectModSettingsCanvas;
+
         private GuiElement settings_Mod_Enabled;
 
 		private GuiElement settings_Mod_Disabled;

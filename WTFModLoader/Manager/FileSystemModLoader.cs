@@ -8,16 +8,16 @@ namespace WTFModLoader.Manager
 {
 	public class FileSystemModLoader
 	{
+		
 		public List<Type> LoadModTypesFromDirectory(string directory, string steamdirectory)
 		{
 			List<Type> modTypes = new List<Type>();
+			modTypes = FilterTypesInDirectory(directory, IsModType).ToList();
 			if (Directory.Exists(steamdirectory))
 			{
-				modTypes = FilterTypesInDirectory(steamdirectory, IsModType).ToList();
+				modTypes.AddRange(FilterTypesInDirectory(steamdirectory, IsModType).ToList());
 			}
-			modTypes.AddRange(FilterTypesInDirectory(directory, IsModType).ToList());
 			return modTypes;
-
 		}
 
 
@@ -30,9 +30,13 @@ namespace WTFModLoader.Manager
 				try
 				{		
 					if (!foundFile.Contains("WTFModLoader.dll") && !foundFile.Contains("0Harmony.dll"))
-					{ 
-					Assembly loadedFile = Assembly.UnsafeLoadFrom(foundFile);
-					modTypes = modTypes.Concat(FilterTypes(loadedFile, predicate)).ToList();
+					{
+						Assembly loadedFile = Assembly.UnsafeLoadFrom(foundFile);
+						if(!foundFile.Contains(loadedFile.Location))
+						{ 
+							WTFModLoader._modManager.conflictingAssemblies.Value.Add(new Tuple<Assembly, string>(loadedFile, foundFile));
+						}
+						modTypes = modTypes.Concat(FilterTypes(loadedFile, predicate)).ToList();				
 					}
 				}
 				catch (Exception e)
@@ -44,7 +48,6 @@ namespace WTFModLoader.Manager
 			}
 			return modTypes;
 		}
-
 		private static IEnumerable<Type> FilterTypes(Assembly asm, Func<Type, bool> predicate)
 		{
 			return asm.GetTypes().Where(predicate);
