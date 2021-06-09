@@ -32,6 +32,7 @@ This project uses game librarys "WTF.exe" and "MonoGame.Framework.dll" which you
 - [ ] Custom ingame Steam upload UI.
 - [ ] Manage game texture loading from Steam workshop. (e.g. conflict resolution)
 - [ ] Provode mod configuration settings in GUI. (write mod specific config file if provided)
+- [ ] CAS .NET framework implementation?
 
 # Contact
 
