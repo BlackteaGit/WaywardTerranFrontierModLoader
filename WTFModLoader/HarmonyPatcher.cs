@@ -102,7 +102,7 @@ namespace WTFModLoader
 				List<Assembly> list = new List<Assembly>(libraries.Length);
 				foreach (string text in libraries)
 				{
-					if (!text.Contains("WTFModLoader.dll") && !text.Contains("0Harmony.dll") && !text.Contains("Newtonsoft.Json.dll"))
+					if (!text.Contains("WTFModLoader.dll") && !text.Contains("0Harmony.dll") && !text.Contains("Newtonsoft.Json.dll") && !text.Contains("SimpleInjector.dll"))
 					{
 						try
 						{

@@ -201,65 +201,68 @@ namespace WTFModLoader
 		public void updateSettings(ModEntry selected, bool enable)
 		{
 			//move active/inactive mods
-			if(!enable && this._tempActiveMods.Value.Contains(selected))
-            {
-				this._tempActiveMods.Value.Remove(selected);
-				this._tempInactiveMods.Value.Add(selected);
-				this._tempActiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
-				this._tempInactiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
-			}
-			else if (enable && this._tempInactiveMods.Value.Contains(selected))
-            {
-				this._tempInactiveMods.Value.Remove(selected);
-				this._tempActiveMods.Value.Add(selected);
-				this._tempActiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
-				this._tempInactiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
-			}
-			this.scrollModsCanvas.elementList.Clear();
-			UpdateModInfo(selected);
-			foreach (var modentry in this._tempActiveMods.Value)
+			if (selected != null)
 			{
-				string status = "active";
-				this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
-				//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = Color.LightGreen;
-				this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = Color.LightGreen;
-				if(modentry.ModMetadata == selected.ModMetadata)
-                {
-					this.scrollModsCanvas.elementList.Last().hasFocus = true;
-				}
-			}
-			if (this._tempInactiveMods.IsValueCreated)
-			{
-				foreach (var modentry in this._tempInactiveMods.Value)
+				if (!enable && this._tempActiveMods.Value.Contains(selected))
 				{
-					string status = "disabled";
+					this._tempActiveMods.Value.Remove(selected);
+					this._tempInactiveMods.Value.Add(selected);
+					this._tempActiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+					this._tempInactiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+				}
+				else if (enable && this._tempInactiveMods.Value.Contains(selected))
+				{
+					this._tempInactiveMods.Value.Remove(selected);
+					this._tempActiveMods.Value.Add(selected);
+					this._tempActiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+					this._tempInactiveMods.Value.Sort((x, y) => x.ModMetadata.Name.CompareTo(y.ModMetadata.Name));
+				}
+				this.scrollModsCanvas.elementList.Clear();
+				UpdateModInfo(selected);
+				foreach (var modentry in this._tempActiveMods.Value)
+				{
+					string status = "active";
 					this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
-					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorMedium;
+					//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = Color.LightGreen;
+					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = Color.LightGreen;
 					if (modentry.ModMetadata == selected.ModMetadata)
 					{
 						this.scrollModsCanvas.elementList.Last().hasFocus = true;
 					}
-
 				}
-			}
-			if (WTFModLoader._modManager.IssuedMods.IsValueCreated)
-			{
-				foreach (var modentry in WTFModLoader._modManager.IssuedMods.Value)
+				if (this._tempInactiveMods.IsValueCreated)
 				{
-					string issue = "unknown error";
-					if (modentry.Issue != "")
+					foreach (var modentry in this._tempInactiveMods.Value)
 					{
-						issue = "loading error: " + modentry.Issue;
-					}
-					this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), issue, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
-					//this.scrollModsCanvas.elementList.Last().elementList.ForEach((label) => label.baseColor = CONFIG.textColorRed);
-					//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = CONFIG.textColorRed;
-					this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorRed;
-					if (modentry.ModMetadata == selected.ModMetadata)
-					{
-						this.scrollModsCanvas.elementList.Last().hasFocus = true;
-					}
+						string status = "disabled";
+						this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), status, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
+						this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorMedium;
+						if (modentry.ModMetadata == selected.ModMetadata)
+						{
+							this.scrollModsCanvas.elementList.Last().hasFocus = true;
+						}
 
+					}
+				}
+				if (WTFModLoader._modManager.IssuedMods.IsValueCreated)
+				{
+					foreach (var modentry in WTFModLoader._modManager.IssuedMods.Value)
+					{
+						string issue = "unknown error";
+						if (modentry.Issue != "")
+						{
+							issue = "loading error: " + modentry.Issue;
+						}
+						this.scrollModsCanvas.AddSaveEntry(shortenEntryTitle(modentry), issue, SCREEN_MANAGER.white, 0, 4, (int)this.popupModsSize.X / 2 - 14, 52, SortType.vertical, new SaveEntry.ClickJournalEvent((entry) => UpdateModInfo(modentry)), null);
+						//this.scrollModsCanvas.elementList.Last().elementList.ForEach((label) => label.baseColor = CONFIG.textColorRed);
+						//this.scrollModsCanvas.elementList.Last().elementList[0].baseColor = CONFIG.textColorRed;
+						this.scrollModsCanvas.elementList.Last().elementList[1].baseColor = CONFIG.textColorRed;
+						if (modentry.ModMetadata == selected.ModMetadata)
+						{
+							this.scrollModsCanvas.elementList.Last().hasFocus = true;
+						}
+
+					}
 				}
 			}
 
