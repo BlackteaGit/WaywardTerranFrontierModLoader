@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace WTFModLoader.Manager
 {
@@ -20,6 +21,7 @@ namespace WTFModLoader.Manager
 		public List<ModEntry> ActiveMods { get; private set; }
 		public Lazy<List<ModEntry>> IssuedMods { get; private set; }
 		public Lazy<List<ModEntry>> InactiveMods { get; private set; }
+		public Lazy<List<Tuple<Assembly, string>>> conflictingAssemblies { get; private set; }
 
 		public ModManager(string modsDirectory, string steamModsDirectory, IFileConfigProvider metadataProvider, FileSystemModLoader modLoader, Container container)
 		{
@@ -34,8 +36,10 @@ namespace WTFModLoader.Manager
 		{
 			IssuedMods = new Lazy<List<ModEntry>>();
 			InactiveMods = new Lazy<List<ModEntry>>();
+			conflictingAssemblies = new Lazy<List<Tuple<Assembly, string>>>();
 			List<Type> mods = _modLoader.LoadModTypesFromDirectory(ModsDirectory, SteamModsDirectory);
 			List<ModEntry> modsWithMetadata = LoadMetadataForModTypes(mods);
+			SetSource(modsWithMetadata);
 			List<ModEntry> modsWithResolvedDependencies = ResolveDependencies(modsWithMetadata);
 			List<ModEntry> modsWithResolvedConflicts = ResolveConflicts(modsWithMetadata);
 			List<ModEntry> modsWithResolvedGameversion = ResolveGameversion(modsWithMetadata);
@@ -46,6 +50,14 @@ namespace WTFModLoader.Manager
 			InitializeMods(ActiveMods);
 		}
 
+		private void SetSource(List<ModEntry> mods)
+		{
+			foreach (var mod in mods)
+			{
+				mod.Source = mod.ModType.Assembly.Location;
+			}
+		}
+
 		private void AddDefaultModEntries(List<ModEntry> mods)
 		{
 			//mods.Add(new ModEntry(new ModsLoadedInfo(), null, new ModMetadata("Mods Loaded Info", "1.0")));  //Loading asseembly included mod for dispalying WTFModloader debug info into the game menu.
@@ -53,17 +65,219 @@ namespace WTFModLoader.Manager
 
 		private List<ModEntry> ResolveDisabledMods(List<ModEntry> modsWithMetadata)
 		{
+			List<ModEntry> Resolved = new List<ModEntry>();
 			List<ModEntry> successfullyResolved = new List<ModEntry>();
 			var disabledResolutionList = modsWithMetadata;
 			foreach (ModEntry entry in disabledResolutionList)
 			{
+
+				
 				if (ModDbManager.isInactive(entry))
-				{	
-					InactiveMods.Value.Add(entry);
+				{
+					var loaded = InactiveMods.Value.Find(e => e.ModType.FullName == entry.ModType.FullName);
+					if (loaded == null)
+					{
+						InactiveMods.Value.Add(entry);
+					}
+					else
+					{
+						if (conflictingAssemblies.IsValueCreated)
+						{
+							foreach (var assemblyconflict in conflictingAssemblies.Value)
+							{
+								if (assemblyconflict.Item1 == loaded.ModType.Assembly)
+								{
+									if (loaded.ModType.Assembly.Location.Contains(WTFModLoader.ModsDirectory) && assemblyconflict.Item2.Contains(WTFModLoader.SteamModsDirectory))
+									{
+										var mod = entry.ModType;
+										try
+										{
+											string metadataPath = Path.Combine(
+												Path.GetDirectoryName(assemblyconflict.Item2),
+												$"{Path.GetFileNameWithoutExtension(assemblyconflict.Item2)}.json");
+											ModMetadata metadata = _metadataProvider.Read<ModMetadata>(metadataPath);
+											if (metadata is null)
+											{
+												metadata = new ModMetadata(mod.FullName, "0.0");
+											}
+											entry.ModMetadata = metadata;
+										}
+										catch (FileNotFoundException)
+										{
+											ModMetadata metadata = new ModMetadata(mod.FullName, "0.0");
+											entry.ModMetadata = metadata;
+										}
+										entry.Source = assemblyconflict.Item2;
+										entry.Issue = $"unable to load steam mod, a local version of this mod is already loaded";
+										IssuedMods.Value.Add(entry);
+										break;
+									}
+									else if (loaded.ModType.Assembly.Location.Contains(WTFModLoader.SteamModsDirectory) && assemblyconflict.Item2.Contains(WTFModLoader.ModsDirectory))
+									{
+										var mod = entry.ModType;
+										try
+										{
+											string metadataPath = Path.Combine(
+												Path.GetDirectoryName(assemblyconflict.Item2),
+												$"{Path.GetFileNameWithoutExtension(assemblyconflict.Item2)}.json");
+											ModMetadata metadata = _metadataProvider.Read<ModMetadata>(metadataPath);
+											if (metadata is null)
+											{
+												metadata = new ModMetadata(mod.FullName, "0.0");
+											}
+											entry.ModMetadata = metadata;
+										}
+										catch (FileNotFoundException)
+										{
+											ModMetadata metadata = new ModMetadata(mod.FullName, "0.0");
+											entry.ModMetadata = metadata;
+										}
+										entry.Source = assemblyconflict.Item2;
+										entry.Issue = $"unable to load local mod version, unsub this mod from Steam to resolve";
+										IssuedMods.Value.Add(entry);
+										break;
+									}
+									if (!IssuedMods.Value.Contains(entry))
+									{
+										var mod = entry.ModType;
+										try
+										{
+											string metadataPath = Path.Combine(
+												Path.GetDirectoryName(assemblyconflict.Item2),
+												$"{Path.GetFileNameWithoutExtension(assemblyconflict.Item2)}.json");
+											ModMetadata metadata = _metadataProvider.Read<ModMetadata>(metadataPath);
+											if (metadata is null)
+											{
+												metadata = new ModMetadata(mod.FullName, "0.0");
+											}
+											entry.ModMetadata = metadata;
+										}
+										catch (FileNotFoundException)
+										{
+											ModMetadata metadata = new ModMetadata(mod.FullName, "0.0");
+											entry.ModMetadata = metadata;
+										}
+										entry.Source = assemblyconflict.Item2;
+										entry.Issue = $"unable to load mod, a different version of this mod is already loaded";
+										IssuedMods.Value.Add(entry);
+										break;
+									}
+								}
+							}
+
+						}
+						if (!IssuedMods.Value.Contains(entry))
+						{
+							entry.Issue = $"unable to load mod, a different version of this mod is already loaded";
+							IssuedMods.Value.Add(entry);
+						}
+					}
 				}
 				else
 				{
+					Resolved.Add(entry);
+				}
+			}
+
+			foreach (ModEntry entry in Resolved)
+			{
+				var active = successfullyResolved.Find(e => e.ModType.FullName == entry.ModType.FullName);
+				if (active == null)
+				{
 					successfullyResolved.Add(entry);
+				}
+				else
+				{
+					if(conflictingAssemblies.IsValueCreated)
+					{ 
+						foreach(var assemblyconflict in conflictingAssemblies.Value)
+						{
+							if(assemblyconflict.Item1 == active.ModType.Assembly)
+							{
+								if (active.ModType.Assembly.Location.Contains(WTFModLoader.ModsDirectory) && assemblyconflict.Item2.Contains(WTFModLoader.SteamModsDirectory))
+								{
+									var mod = entry.ModType;
+									try
+									{					
+										string metadataPath = Path.Combine(
+											Path.GetDirectoryName(assemblyconflict.Item2),
+											$"{Path.GetFileNameWithoutExtension(assemblyconflict.Item2)}.json");
+										ModMetadata metadata = _metadataProvider.Read<ModMetadata>(metadataPath);
+										if (metadata is null)
+										{
+											metadata = new ModMetadata(mod.FullName, "0.0");
+										}
+										entry.ModMetadata = metadata;
+									}
+									catch (FileNotFoundException)
+									{
+										ModMetadata metadata = new ModMetadata(mod.FullName, "0.0");
+										entry.ModMetadata = metadata;
+									}
+									entry.Source = assemblyconflict.Item2;
+									entry.Issue = $"unable to load steam mod, a local version of this mod is already loaded";
+									IssuedMods.Value.Add(entry);
+									break;
+								}
+								else if (active.ModType.Assembly.Location.Contains(WTFModLoader.SteamModsDirectory) && assemblyconflict.Item2.Contains(WTFModLoader.ModsDirectory))
+								{
+									var mod = entry.ModType;
+									try
+									{
+										string metadataPath = Path.Combine(
+											Path.GetDirectoryName(assemblyconflict.Item2),
+											$"{Path.GetFileNameWithoutExtension(assemblyconflict.Item2)}.json");
+										ModMetadata metadata = _metadataProvider.Read<ModMetadata>(metadataPath);
+										if (metadata is null)
+										{
+											metadata = new ModMetadata(mod.FullName, "0.0");
+										}
+										entry.ModMetadata = metadata;
+									}
+									catch (FileNotFoundException)
+									{
+										ModMetadata metadata = new ModMetadata(mod.FullName, "0.0");
+										entry.ModMetadata = metadata;
+									}
+									entry.Source = assemblyconflict.Item2;
+									entry.Issue = $"unable to load local mod version, unsub this mod from Steam to resolve";
+									IssuedMods.Value.Add(entry);
+									break;
+								}
+								if (!IssuedMods.Value.Contains(entry))
+								{
+									var mod = entry.ModType;
+									try
+									{
+										string metadataPath = Path.Combine(
+											Path.GetDirectoryName(assemblyconflict.Item2),
+											$"{Path.GetFileNameWithoutExtension(assemblyconflict.Item2)}.json");
+										ModMetadata metadata = _metadataProvider.Read<ModMetadata>(metadataPath);
+										if (metadata is null)
+										{
+											metadata = new ModMetadata(mod.FullName, "0.0");
+										}
+										entry.ModMetadata = metadata;
+									}
+									catch (FileNotFoundException)
+									{
+										ModMetadata metadata = new ModMetadata(mod.FullName, "0.0");
+										entry.ModMetadata = metadata;
+									}
+									entry.Source = assemblyconflict.Item2;
+									entry.Issue = $"unable to load mod, a different version of this mod is already loaded";
+									IssuedMods.Value.Add(entry);
+									break;
+								}
+							}
+						}
+
+					}
+					if (!IssuedMods.Value.Contains(entry))
+					{
+						entry.Issue = $"unable to load, a different version of this mod is already loaded";
+						IssuedMods.Value.Add(entry);
+					}
 				}
 			}
 			return successfullyResolved;
@@ -77,12 +291,12 @@ namespace WTFModLoader.Manager
 				try
 				{
 					string metadataPath = Path.Combine(
-						Path.GetDirectoryName(mod.Assembly.Location), 
+						Path.GetDirectoryName(mod.Assembly.Location),
 						$"{Path.GetFileNameWithoutExtension(mod.Assembly.Location)}.json");
 					ModMetadata metadata = _metadataProvider.Read<ModMetadata>(metadataPath);
 					if (metadata is null)
 					{
-						metadata = new ModMetadata(mod.FullName , "0.0");
+						metadata = new ModMetadata(mod.FullName, "0.0");
 					}
 					result.Add(new ModEntry(mod, metadata));
 				}
@@ -90,6 +304,7 @@ namespace WTFModLoader.Manager
 				{
 					ModMetadata metadata = new ModMetadata(mod.FullName, "0.0");
 					result.Add(new ModEntry(mod, metadata));
+
 				}
 			}
 			return result;
@@ -217,7 +432,8 @@ namespace WTFModLoader.Manager
 						throw new ModLoadFailureException($"Mod `{entry.ModType.FullName}` failed to initialize for unknown reason.");
 					}
 
-					instantiatedEntries.Add(new ModEntry(modInstance, entry.ModType, entry.ModMetadata));		
+					instantiatedEntries.Add(new ModEntry(modInstance, entry.ModType, entry.ModMetadata));
+					instantiatedEntries.Last<ModEntry>().Source = entry.Source;
 				}
 				catch (Exception e)
 				{
