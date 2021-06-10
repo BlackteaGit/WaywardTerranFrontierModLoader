@@ -18,7 +18,7 @@ namespace WTFModLoader
 		public static string CurrentBuildVersion { get; private set; }
 		public static string ModsDirectory { get; private set; }
 		public static string SteamModsDirectory { get; private set; }
-		public static void Initialize()
+		public static void Initialize() //WTFModLoaderInjector entry
 		{
 			
 			if(ModsDirectory == null || SteamModsDirectory == null)
@@ -77,6 +77,7 @@ namespace WTFModLoader
 
 		public class MyLoader : ExtensionLoader
 		{
+			//WTF version 0.9 entry
 			public void load(Dictionary<Color, BackdropExt> backdrops, Dictionary<string, TextureBatch> sectorTextures, Dictionary<Color, TerrainGenerator> sectorGenerators, Dictionary<Color, LightSettings> lightSettings, Dictionary<Color, LightShaftSettings> lightShaftSettings, Dictionary<Color, string[]> audioSettings, List<Color> preloadRequired, Dictionary<Color, IconBatch> mapIcons, Dictionary<Color, string> iconTechniques, List<string> mapDataIncludes, Dictionary<string, POEIcon> interestIcons, Dictionary<Color, BackdropInfo> backdropInfo)
 			{
 				string rootDirectory = System.IO.Directory.GetCurrentDirectory()
@@ -87,7 +88,6 @@ namespace WTFModLoader
 				SteamModsDirectory = workshop;
 				ModsDirectory = mods;
 				Initialize();
-
 			}
 		}
 
@@ -107,7 +107,7 @@ namespace WTFModLoader
 			}
 			SteamModsDirectory = Path.GetFullPath(Path.Combine(manifestDirectory, Path.Combine(@"..\..\workshop\content\392080")));
 			ModsDirectory = Path.GetFullPath(Path.Combine(manifestDirectory, Path.Combine(@"Mods")));
-			HarmonyPatcher.PatchBACKDROP();
+			//HarmonyPatcher.PatchBACKDROP(); // possibility to modyfy backdrop loading process if loaded by Injector (earlier entry point)
 		}
 
 		private static void EnsureFolderSetup()
