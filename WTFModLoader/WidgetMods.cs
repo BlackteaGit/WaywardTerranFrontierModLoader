@@ -304,6 +304,8 @@ namespace WTFModLoader
 			if(selected == null)
 			{
 				this.descriptionTextScroll.elementList.Clear();
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.ScrollCanvas", throwOnError: true).GetField("maxValue", flags).SetValue(this.descriptionTextScroll, 0f);
+				typeof(Canvas).Assembly.GetType("CoOpSpRpG.ScrollCanvas", throwOnError: true).GetField("sliderValue", flags).SetValue(this.descriptionTextScroll, 0f);
 				modTitleLabel.setText("");
 				modAuthorLabel.setText("Author:");
 				modSourceLabel.setText("Source:");
