@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WaywardExtensions;
 using WTFModLoader.Manager;
 
@@ -318,9 +316,7 @@ namespace WTFModLoader
 				foreach (var element in this.selectModSettingsCanvas.elementList)
                 {
 					(element as CheckBoxAdv).highAlpha = (element as CheckBoxAdv).lowAlpha;
-				}
-				
-
+				}			
 			}
 			else
             {
@@ -406,12 +402,16 @@ namespace WTFModLoader
 
 		public void UpdateDescriptionText(string text, SpriteFont font)
 		{
+			BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
 			var wrapedText = ToolBox.WrapDynamicText(font, text, descriptionTextScroll.width, 10f, 1f);
 			this.descriptionTextScroll.elementList.Clear();
 			for (int i = 0; i < wrapedText.textLines.Count; i++)
 			{
 				this.descriptionTextScroll.AddTextBox(wrapedText.textLines[i], font, 0, 0, descriptionTextScroll.width, (int)font.MeasureString(wrapedText.textLines[i]).Y + 1, new Color(177, 197, 200), VerticalAlignment.top, 18, 1f, 10f, 1f);
 			}
+			var headPosition = (int)typeof(Canvas).Assembly.GetType("CoOpSpRpG.ScrollCanvas", throwOnError: true).GetField("headPosition", flags).GetValue(this.descriptionTextScroll);
+			typeof(Canvas).Assembly.GetType("CoOpSpRpG.ScrollCanvas", throwOnError: true).GetField("maxValue", flags).SetValue(this.descriptionTextScroll, (float)(headPosition - this.descriptionTextScroll.region.Height));
+			typeof(Canvas).Assembly.GetType("CoOpSpRpG.ScrollCanvas", throwOnError: true).GetField("sliderValue", flags).SetValue(this.descriptionTextScroll, 0f);
 		}
 
 		private Lazy<List<ModEntry>> _tempInactiveMods = new Lazy<List<ModEntry>>();
