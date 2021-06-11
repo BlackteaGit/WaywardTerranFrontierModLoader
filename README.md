@@ -30,7 +30,7 @@ Place the contents of the .zip file in your game root directory. Run the executa
 Run the game to have it generate the `Mods` folder for the Mod Loader. Place all mod directories/files into this folder.
 You will have to reinstall the loader by running `WTFModLoaderInjector.exe` with every new game patch if you want to continue using this loading method.
 
-IMPORTANT NOTICE: If you are using v0.1 or v0.2 non-steam WTFML build from github releases loaded via WTFModLoaderInjector.exe, make sure that you restore WTF.exe to vanilla before subscribing to the current steam WTFML build or placing the loader files into "Extensions" folder, or the game will run both versions at once and crash.
+**IMPORTANT NOTICE:** If you are using v0.1 or v0.2 non-steam WTFML build from github releases loaded via WTFModLoaderInjector.exe, make sure that you restore WTF.exe to vanilla before subscribing to the current steam WTFML build or placing the loader files into "Extensions" folder, or the game will run both versions at once and crash.
 You can restore your vanilla game files via steam game file integrity verification check or by renaming WTF.exe.orig file from the game root directory back to WTF.exe.
 The steam version will no longer modify any of your game files and will not require manual injection into WTF.exe.
 
