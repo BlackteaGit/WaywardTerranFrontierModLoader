@@ -36,8 +36,8 @@ You will have to reinstall the loader by running `WTFModLoaderInjector.exe` with
 
 **IMPORTANT NOTICE:** 
 
-If you are using v0.1 or v0.2 non-steam WTFML build from github releases loaded via `WTFModLoaderInjector.exe`, make sure that you restore WTF.exe to vanilla before subscribing to the current steam WTFML build or placing the loader files into "Extensions" folder, or the game will run both versions at once and crash.
-You can restore your vanilla game files via steam game file integrity verification check or by renaming `WTF.exe.orig` file from the game root directory back to WTF.exe.
+If you are using v0.1 or v0.2 non-steam WTFML build from github releases loaded via `WTFModLoaderInjector.exe`, make sure that you restore WTF.exe to vanilla before subscribing to the current steam WTFML build or placing the loader files into `Extensions` folder, or the game will run both versions at once and crash.
+You can restore your vanilla game files via steam game file integrity verification check or by renaming `WTF.exe.orig` file from the game root directory back to `WTF.exe`.
 
 Please report any game bugs with installed mod loader to me first, or make sure that you can reproduce them in vanilla game before reporting them to WTF devs.
 
