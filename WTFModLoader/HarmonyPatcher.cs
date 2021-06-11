@@ -17,13 +17,15 @@ namespace WTFModLoader
     {
         public static Harmony harmony = new Harmony("WTFModLoader");
 
-        public static void PatchBACKDROP()
+		//modifying WTF backdrop loading process with harmony for testing purposes
+		/*
+		public static void PatchBACKDROP()
         {
 			var mOriginal = AccessTools.Method(typeof(BACKDROP), "Load", new Type[] { typeof(GraphicsDevice), typeof(IServiceProvider) });
             var mPrefix = AccessTools.Method(typeof(HarmonyPatcher), "BACKDROPLoadPrefix");
             harmony.Patch(mOriginal, new HarmonyMethod(mPrefix));
         }
-
+		*/
 		public static void PatchGameRootMenu()
         {
 			PatchRootMenuRev2();
@@ -58,7 +60,8 @@ namespace WTFModLoader
 		}
 
 		
-
+		//modifying WTF backdrop loading process with harmony for testing purposes
+		/*
 		private static bool BACKDROPLoadPrefix(GraphicsDevice device, IServiceProvider services, ref ContentManager ___content, ref RenderTarget2D ___backdropTarget, ref RenderTarget2D ___occlusionTarget)
 		{
 			___content = new ContentManager(services, "Content");
@@ -288,6 +291,7 @@ namespace WTFModLoader
 			}
 			return false;
 		}
+		*/
 
 		private static void RootMenuRev2ConstructorPostfix(RootMenuRev2 __instance, ref int ___coreMenuWidth)
 		{
