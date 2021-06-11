@@ -31,8 +31,16 @@ namespace WTFModLoader.Manager
 				{		
 					if (!foundFile.Contains("WTFModLoader.dll") && !foundFile.Contains("0Harmony.dll"))
 					{
-						Assembly loadedFile = Assembly.UnsafeLoadFrom(foundFile);
-						if(!foundFile.Contains(loadedFile.Location))
+						Assembly loadedFile = null;
+						if (WTFModLoader.legacyLoad)
+						{
+							loadedFile = Assembly.LoadFile(foundFile);
+						}
+						else
+						{ 
+							loadedFile = Assembly.UnsafeLoadFrom(foundFile);
+						}
+						if (!foundFile.Contains(loadedFile.Location))
 						{ 
 							WTFModLoader._modManager.conflictingAssemblies.Value.Add(new Tuple<Assembly, string>(loadedFile, foundFile));
 						}

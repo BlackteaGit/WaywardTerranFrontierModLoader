@@ -15,6 +15,8 @@ namespace WTFModLoader
 	public static class WTFModLoader
 	{
 		public static ModManager _modManager;
+
+		public static bool legacyLoad;
 		public static string CurrentBuildVersion { get; private set; }
 		public static string ModsDirectory { get; private set; }
 		public static string SteamModsDirectory { get; private set; }
@@ -93,6 +95,7 @@ namespace WTFModLoader
 
 		private static void LegacyLoad()
 		{
+			legacyLoad = true;
 			CurrentBuildVersion = "0.4";
 			string manifestDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
 					?? throw new InvalidOperationException("Could not determine operating directory. Is your folder structure correct? " +
