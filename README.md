@@ -1,4 +1,4 @@
-[Modding Tutorial](https://github.com/BlackteaGit/WaywardTerranFrontierModLoader/wiki/A-Quick-Introduction-To-DLL-Modding) | [Current Release](https://github.com/BlackteaGit/WaywardTerranFrontierModLoader/releases)
+[Modding Tutorial](https://github.com/BlackteaGit/WaywardTerranFrontierModLoader/wiki/A-Quick-Introduction-To-DLL-Modding) | [Current Release](https://github.com/BlackteaGit/WaywardTerranFrontierModLoader/releases) | [Wiki] (https://github.com/BlackteaGit/WaywardTerranFrontierModLoader/wiki)
 # WaywardTerranFrontierModLoader
 
 A tool to enable loading multiple mods into the game Wayward Terran Frontier: Zero Falls. This project is forked from Phoenix Point Mod Loader
