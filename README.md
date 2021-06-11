@@ -20,7 +20,7 @@ Optional use of https://github.com/jbevain/cecil to inject a method call into WT
 Go to the steam workshop mod page: https://steamcommunity.com/workshop/filedetails/?id=2464675377
 Subscribe to to the workshop item, the game will load it automatically on the next start.
 Run the game once to create `Mods` folder, place your local mods there. The loader will also run any downloaded subscribed mods from steam workshop directory.
-The steam version no longer contains `WTFModLoaderInjector.exe`, does not modify any of your game files and will not require manual injection into `WTF.exe`.
+The steam version no longer contains `WTFModLoaderInjector.exe`, does not modify any of your game files and will be automatically updated by the steam client.
 
 **Local method:** (requires game 0.9 dev build 22 or later, the latest WTFML build, will work without running steam client)
 
