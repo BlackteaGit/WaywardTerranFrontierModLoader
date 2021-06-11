@@ -11,7 +11,7 @@ The mod manager will load all found .dll files from `Mods` folder, `\steamapps\w
 Harmony ( https://github.com/pardeike/Harmony ) is a tool developed for modders, which enables the ability to patch game methods at runtime without changing the game files.
 Additionaly all dll mods manged by the loader can access each other's code via the loader by using reflection.
 Basic management options like mod version check, disabling certain mods and conflict resolution are also provided.
-Optional use of https://github.com/jbevain/cecil to inject a method call into WTF.exe, which will create `Mods` directory in the game root folder and load the mod manager.
+Optional use of https://github.com/jbevain/cecil to inject a method call into WTF.exe, which will load the mod manager.
 
 # Installation
 
