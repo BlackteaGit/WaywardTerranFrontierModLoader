@@ -16,21 +16,26 @@ Optional use of https://github.com/jbevain/cecil to inject a method call into WT
 # Installation
 
 **Steam method:** (requires game 0.9 dev build 22 or later, the latest WTFML build, steam client must be running)
+
 Go to the steam workshop mod page: https://steamcommunity.com/workshop/filedetails/?id=2464675377
 Subscribe to to the workshop item, the game will load it automatically on the next start.
 Run the game once to create "Mods" folder, place your local mods there. The loader will also run any downloaded subscribed mods from steam workshop directory.
 
 **Local method:** (requires game 0.9 dev build 22 or later, the latest WTFML build, will work without running steam client)
+
 Place the contents of the .zip file in the "Extensions" folder of your game root directory.
 The game will load it automatically on the next start.
 Run the game once to create "Mods" folder, place your local mods there. The loader will also run any downloaded subscribed mods from steam workshop directory.
 
 **Legacy method:** (pre 0.9 game version, required for WTFML builds v0.1/v0.2, will also work for any later WTFML builds and game versions )
+
 Place the contents of the .zip file in your game root directory. Run the executable titled `WTFModLoaderInjector.exe`.
 Run the game to have it generate the `Mods` folder for the Mod Loader. Place all mod directories/files into this folder.
 You will have to reinstall the loader by running `WTFModLoaderInjector.exe` with every new game patch if you want to continue using this loading method.
 
-**IMPORTANT NOTICE:** If you are using v0.1 or v0.2 non-steam WTFML build from github releases loaded via WTFModLoaderInjector.exe, make sure that you restore WTF.exe to vanilla before subscribing to the current steam WTFML build or placing the loader files into "Extensions" folder, or the game will run both versions at once and crash.
+**IMPORTANT NOTICE:** 
+
+If you are using v0.1 or v0.2 non-steam WTFML build from github releases loaded via WTFModLoaderInjector.exe, make sure that you restore WTF.exe to vanilla before subscribing to the current steam WTFML build or placing the loader files into "Extensions" folder, or the game will run both versions at once and crash.
 You can restore your vanilla game files via steam game file integrity verification check or by renaming WTF.exe.orig file from the game root directory back to WTF.exe.
 The steam version will no longer modify any of your game files and will not require manual injection into WTF.exe.
 
