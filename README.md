@@ -55,7 +55,7 @@ This project uses game librarys `WTF.exe` and `MonoGame.Framework.dll` which you
 - [ ] More management options (e.g. copy steam mods to local, custom mod lists, delete loc. mods, unsub steam mods, etc.)
 - [ ] Custom ingame Steam upload UI.
 - [ ] Manage game texture loading from Steam workshop. (e.g. conflict resolution)
-- [ ] Provode mod configuration settings in GUI. (write mod specific config file if provided)
+- [ ] Provide mod specific settings configuration in GUI. (edit mod config file if available)
 - [ ] CAS .NET framework implementation?
 
 # Contact
