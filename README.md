@@ -24,7 +24,7 @@ The steam version no longer contains `WTFModLoaderInjector.exe`, does not modify
 
 **Local method:** (requires game 0.9 dev build 22 or later, the latest WTFML build, will work without running steam client)
 
-Place the contents of the .zip file in the `Extensions` folder of your game root directory.
+Place the contents of the .zip file into the `Extensions` folder of your game root directory.
 The game will load it automatically from there on the next start.
 Run the game once to create `Mods` folder, place your local mods there. The loader will also run any downloaded subscribed mods from steam workshop directory.
 
