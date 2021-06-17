@@ -11,7 +11,7 @@ The mod manager will load all found .dll files from `Mods` folder, `\steamapps\w
 Harmony ( https://github.com/pardeike/Harmony ) is a tool developed for modders, which enables the ability to patch game methods at runtime without changing the game files.
 Additionaly all dll mods manged by the loader can access each other's code via the loader by using reflection.
 Basic management options like mod version check, disabling certain mods and conflict resolution are also provided.
-Optional use of https://github.com/jbevain/cecil to inject a method call into WTF.exe, which will load the mod manager.
+Optional use of https://github.com/jbevain/cecil to inject a method call into `WTF.exe`, which will load the mod manager.
 
 # Installation
 
@@ -36,7 +36,7 @@ You will have to reinstall the loader by running `WTFModLoaderInjector.exe` with
 
 **IMPORTANT NOTICE:** 
 
-If you are using v0.1 or v0.2 non-steam WTFML build from github releases loaded via `WTFModLoaderInjector.exe`, make sure that you restore WTF.exe to vanilla before subscribing to the current steam WTFML build or placing the loader files into `Extensions` folder, or the game will run both versions at once and crash.
+If you are using v0.1 or v0.2 non-steam WTFML build from github releases loaded via `WTFModLoaderInjector.exe`, make sure that you restore `WTF.exe` to vanilla before subscribing to the current steam WTFML build or placing the loader files into `Extensions` folder, or the game will run both versions at once and crash.
 You can restore your vanilla game files via steam game file integrity verification check or by renaming `WTF.exe.orig` file from the game root directory back to `WTF.exe`.
 
 Please report any game bugs with installed mod loader to me first, or make sure that you can reproduce them in vanilla game before reporting them to WTF devs.
