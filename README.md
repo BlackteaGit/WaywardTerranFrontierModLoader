@@ -28,7 +28,7 @@ Unpack the contents of the .zip file into the `Extensions` folder of your game r
 The game will load it from there without any further installation on the next start.
 Run the game once to create `Mods` folder, place your local mods there. The loader will also run any downloaded subscribed mods from steam workshop directory.
 
-**Legacy method:** (required by pre 0.9 game builds, required for WTFML builds v0.1/v0.2, will also work for any later WTFML builds and game versions )
+**Legacy method:** (required by pre 0.9 game builds, required for WTFML builds v0.1/v0.2, will also work with any other WTFML builds and game versions )
 
 Place the contents of the .zip file in your game root directory. Run the executable titled `WTFModLoaderInjector.exe` , it will inject the loader code into `WTF.exe`.
 Run the game to have it generate the `Mods` folder for the Mod Loader. Place all mod directories/files into this folder.
