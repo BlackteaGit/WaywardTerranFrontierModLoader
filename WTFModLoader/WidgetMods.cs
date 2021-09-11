@@ -65,7 +65,7 @@ namespace WTFModLoader
 			this.gameVersionLabel = (Label)sortDataLabels.elementList.Last<GuiElement>();
 			sortDataLabels.addLabel("Source:", SCREEN_MANAGER.FF12, 8, 0, sortDataLabels.width - 8, 20, color);
 			this.modSourceLabel = (Label)sortDataLabels.elementList.Last<GuiElement>();
-
+			sortDataLabels.baseColor = new Color(0, 0, 0, 0); //making labels background transparent
 
 			sortSettingsCanvas.AddScrollCanvas("description scroll", SCREEN_MANAGER.white, 8, 12, (int)this.popupModsSize.X / 2 - 16 , 426, SortType.vertical);
 			this.descriptionTextScroll = sortSettingsCanvas.elementList.Last<GuiElement>();
