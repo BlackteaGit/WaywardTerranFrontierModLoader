@@ -41,17 +41,17 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Zero Falls\System.Data.SQLite.dll</HintPath>
+      <HintPath>G:\SteamLibrary\steamapps\common\Zero Falls\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WaywardExtensions">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Zero Falls\WaywardExtensions.dll</HintPath>
+      <HintPath>G:\SteamLibrary\steamapps\common\Zero Falls\WaywardExtensions.dll</HintPath>
     </Reference>
     <Reference Include="WTF">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Zero Falls\WTF.exe</HintPath>
+      <HintPath>G:\SteamLibrary\steamapps\common\Zero Falls\WTF.exe</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

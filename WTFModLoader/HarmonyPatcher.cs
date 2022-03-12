@@ -300,12 +300,23 @@ namespace WTFModLoader
 			___coreMenuWidth += 124;
 		}
 
-		private static void RootMenuRev2createElementsPostfix(GuiElement ___subMenuExtra)
+		private static void RootMenuRev2createElementsPostfix(GuiElement ___subMenuExtra, GuiElement ___subMenuSettings)
 		{
-			___subMenuExtra.width += 124;
-			___subMenuExtra.elementList[0].offsetX += 4;
-			___subMenuExtra.AddButton("Mod Manager", SCREEN_MANAGER.white, 0, 0, 120, 40, new BasicButton.ClickEvent(WTFRootMenu.actionMods), SCREEN_MANAGER.FF16, new Color(196, 250, 255, 210));
-			___subMenuExtra.elementList.Move(___subMenuExtra.elementList.Count-1, 0);
+			bool flag = !CONFIG.openMP;
+			if (flag)
+			{
+				___subMenuExtra.width += 124;
+				___subMenuExtra.elementList[0].offsetX += 4;
+				___subMenuExtra.AddButton("Mod Manager", SCREEN_MANAGER.white, 0, 0, 120, 40, new BasicButton.ClickEvent(WTFRootMenu.actionMods), SCREEN_MANAGER.FF16, new Color(196, 250, 255, 210));
+				___subMenuExtra.elementList.Move(___subMenuExtra.elementList.Count - 1, 0);
+			}
+			else
+			{
+				___subMenuSettings.width += 124;
+				___subMenuSettings.elementList[0].offsetX += 4;
+				___subMenuSettings.AddButton("Mod Manager", SCREEN_MANAGER.white, 0, 0, 120, 40, new BasicButton.ClickEvent(WTFRootMenu.actionMods), SCREEN_MANAGER.FF16, new Color(196, 250, 255, 210));
+				___subMenuSettings.elementList.Move(___subMenuSettings.elementList.Count - 1, 0);
+			}
 		}
 
 		private static void RootMenuRev2resizePostfix()
