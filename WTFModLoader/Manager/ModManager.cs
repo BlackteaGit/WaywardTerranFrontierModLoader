@@ -358,7 +358,7 @@ namespace WTFModLoader.Manager
 				}
 				else
 				{
-					entry.Issue = "conflicts with other mod(s)";
+					entry.Issue = "conflicts with other mod(s), the mod has been disabled";
 					IssuedMods.Value.Add(entry);
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed to resolve conflicts. (conflicting mod(s) definition was found in metadata files)");
 				}
@@ -385,7 +385,7 @@ namespace WTFModLoader.Manager
 				}
 				else
 				{
-					entry.Issue = "incompatible with current game version";
+					entry.Issue = "incompatible with current game version, the mod has been disabled";
 					IssuedMods.Value.Add(entry);
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed game version compatibility check. (mod is not compatible with current game version)");
 				}
@@ -412,7 +412,7 @@ namespace WTFModLoader.Manager
 				}
 				else
 				{
-					entry.Issue = "incompatible with current loader version";
+					entry.Issue = "incompatible with current loader version, the mod has been disabled";
 					IssuedMods.Value.Add(entry);
 					Logger.Log($"Mod `{entry.ModMetadata.Name} (v{entry.ModMetadata.Version})` failed loader version compatibility check. (mod is not compatible with current version of WTFML)");
 				}

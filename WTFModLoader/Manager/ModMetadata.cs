@@ -166,67 +166,75 @@ namespace WTFModLoader.Manager
                     string modrequiredgameversion = mod.Gameversion;
                     float formatedCurrentGameversion = 0;
                     float formatedModRequiredGameversion = 0;
-
-                    if (currentgameversion.Length >= 5)
-                    {
-
-                        var toformat = currentgameversion.Substring(0, 5);
-                        int foundS1 = toformat.IndexOf(".");
-                        int foundS2 = toformat.IndexOf(".", foundS1 + 1);
-
-                        if (foundS1 != foundS2 && foundS1 >= 0 && foundS2 >= 0)
-                        {
-                            toformat = toformat.Remove(foundS2, 1);
-                        }
-                        else
-                        {
-                            toformat = toformat.Substring(0, 3);
-                        }
-
-                        formatedCurrentGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
-
-                        if (modrequiredgameversion.Length == 3)
-                        {
-                            toformat = currentgameversion.Substring(0, 3);
-                            formatedCurrentGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
-                        }
-                    }
-
-                    if (modrequiredgameversion.Length == 3)
-                    {
-                        var toformat = modrequiredgameversion.Substring(0, 3);
-                        formatedModRequiredGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        if (modrequiredgameversion.Length == 5)
+                    if(!CoOpSpRpG.CONFIG.openMP)
+                    { 
+                        if (currentgameversion.Length >= 5)
                         {
 
-                            var toformat = modrequiredgameversion.Substring(0, 5);
+                            var toformat = currentgameversion.Substring(0, 5);
                             int foundS1 = toformat.IndexOf(".");
                             int foundS2 = toformat.IndexOf(".", foundS1 + 1);
 
-                            if (foundS1 != foundS2 && foundS1 >= 0)
+                            if (foundS1 != foundS2 && foundS1 >= 0 && foundS2 >= 0)
+                            {
                                 toformat = toformat.Remove(foundS2, 1);
+                            }
+                            else
+                            {
+                                toformat = toformat.Substring(0, 3);
+                            }
 
+                            formatedCurrentGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
+
+                            if (modrequiredgameversion.Length == 3)
+                            {
+                                toformat = currentgameversion.Substring(0, 3);
+                                formatedCurrentGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
+                            }
+                        }
+
+                        if (modrequiredgameversion.Length == 3)
+                        {
+                            var toformat = modrequiredgameversion.Substring(0, 3);
                             formatedModRequiredGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
                         }
-                    }
+                        else
+                        {
+                            if (modrequiredgameversion.Length == 5)
+                            {
 
-                    if (formatedModRequiredGameversion != 0 && formatedCurrentGameversion != 0)
-                    {
-                        if (formatedCurrentGameversion >= formatedModRequiredGameversion)
-                            result = true;
+                                var toformat = modrequiredgameversion.Substring(0, 5);
+                                int foundS1 = toformat.IndexOf(".");
+                                int foundS2 = toformat.IndexOf(".", foundS1 + 1);
+
+                                if (foundS1 != foundS2 && foundS1 >= 0)
+                                    toformat = toformat.Remove(foundS2, 1);
+
+                                formatedModRequiredGameversion = Convert.ToSingle(toformat, System.Globalization.CultureInfo.InvariantCulture);
+                            }
+                        }
+
+                        if (formatedModRequiredGameversion != 0 && formatedCurrentGameversion != 0)
+                        {
+                            if (formatedCurrentGameversion >= formatedModRequiredGameversion)
+                                result = true;
+                        }
+                        else
+                        {
+                            if (modrequiredgameversion.Length <= 5)
+                            {
+                                Logger.Log($"Mod `{mod.Name} (v{mod.Version})` has game version metadata in unknown format: `{mod.Gameversion}` and will not be loaded");
+                            }
+                             result = false;
+
+                        }   
                     }
                     else
                     {
-                        if (modrequiredgameversion.Length <= 5)
-                        {
-                            Logger.Log($"Mod `{mod.Name} (v{mod.Version})` has game version metadata in unknown format: `{mod.Gameversion}` and will not be loaded");
-                        }
-
+ //TODO parsing code for MP versíon check.
                         result = false;
                     }
+
 
                 }
                 catch (Exception e)
